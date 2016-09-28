@@ -5,7 +5,7 @@
 
     <groupId>com.snovelli</groupId>
     <artifactId>redirect-check-cl</artifactId>
-    <version>0.5.3-SNAPSHOT</version>
+    <version>0.5.4</version>
     <packaging>jar</packaging>
 
     <name>redirect-check-cl</name>
