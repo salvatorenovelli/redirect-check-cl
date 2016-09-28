@@ -15,7 +15,7 @@ public final class RedirectCheckResponse {
     private final String statusMessage;
     private final String sourceURI;
     private final String expectedDestinationURI;
-    private URI actualDestinationURI;
+    private String actualDestinationURI;
     private HttpStatus lastHttpStatus;
 
     private List<RedirectChainElement> redirectChain;
@@ -62,7 +62,7 @@ public final class RedirectCheckResponse {
     }
 
 
-    public URI getActualDestinationURI() {
+    public String getActualDestinationURI() {
         return actualDestinationURI;
     }
 

@@ -45,8 +45,8 @@ public final class RedirectChain {
         this.isFailed = true;
     }
 
-    public URI getDestinationURI() {
-        return getLastElement().getDestinationURI();
+    public String getDestinationURI() {
+        return getLastElement().getDestinationURI().toASCIIString();
     }
 
     public HttpStatus getLastStatus() {

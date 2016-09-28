@@ -35,8 +35,8 @@ public class RedirectSpecificationCSVReaderTest {
 
         int i = 1;
         for (RedirectSpecification curEntry : specificationList) {
-            assertThat(curEntry.getSourceURI(), equalTo(new URI("http://sourceURI" + i + ".com")));
-            assertThat(curEntry.getExpectedDestination(), equalTo(new URI("http://expectedURI" + i + ".com")));
+            assertThat(curEntry.getSourceURI(), equalTo("http://sourceURI" + i + ".com"));
+            assertThat(curEntry.getExpectedDestination(), equalTo("http://expectedURI" + i + ".com"));
             i++;
         }
 
@@ -50,7 +50,7 @@ public class RedirectSpecificationCSVReaderTest {
         List<RedirectSpecification> specificationList = RedirectSpecificationCSVReader.parse(Paths.get(csvFile.toURI()));
 
         assertThat(specificationList, notNullValue());
-        assertThat(specificationList.size(), is(2));
+        assertThat(specificationList.size(), is(3));
 
 
     }
