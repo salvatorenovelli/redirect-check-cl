@@ -31,9 +31,9 @@ public class DefaultRedirectChainAnalyserTest {
 
     @Test
     public void testCheckRedirect() throws Exception {
-        RedirectChain redirectChain = sut.analyseRedirectChain(new URI("http://www.fedesarda.it/it"));
+        RedirectChain redirectChain = sut.analyseRedirectChain("http://www.fedesarda.it/it");
         assertThat(redirectChain.getNumOfRedirect(), is(1));
-        assertThat(redirectChain.getDestinationURI(), equalTo(new URI("http://www.fedesarda.it/it/")));
+        assertThat(redirectChain.getDestinationURI(), equalTo("http://www.fedesarda.it/it/"));
     }
 
 

@@ -13,8 +13,8 @@ public final class RedirectCheckResponse {
 
     private final Status status;
     private final String statusMessage;
-    private final URI sourceURI;
-    private final URI expectedDestinationURI;
+    private final String sourceURI;
+    private final String expectedDestinationURI;
     private URI actualDestinationURI;
     private HttpStatus lastHttpStatus;
 
@@ -87,7 +87,7 @@ public final class RedirectCheckResponse {
         return statusMessage;
     }
 
-    public URI getExpectedDestinationURI() {
+    public String getExpectedDestinationURI() {
         return expectedDestinationURI;
     }
 
@@ -99,12 +99,11 @@ public final class RedirectCheckResponse {
                 '}';
     }
 
-    public URI getSourceURI() {
+    public String getSourceURI() {
         return sourceURI;
     }
 
     public enum Status {
-        SUCCESS, FAILURE;
-
+        SUCCESS, FAILURE
     }
 }

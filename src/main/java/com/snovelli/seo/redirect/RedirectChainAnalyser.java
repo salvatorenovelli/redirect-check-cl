@@ -35,13 +35,13 @@ public class RedirectChainAnalyser {
     /**
      *
      * */
-    public RedirectChain analyseRedirectChain(URI startURI) {
+    public RedirectChain analyseRedirectChain(String startURI) {
 
         RedirectChain result = new RedirectChain();
 
         try {
 
-            URI currentURI = startURI;
+            URI currentURI = new URI(startURI.trim());
             HttpResponse curResponse = null;
 
             while (curResponse == null || isRedirect(curResponse.getStatusCode())) {

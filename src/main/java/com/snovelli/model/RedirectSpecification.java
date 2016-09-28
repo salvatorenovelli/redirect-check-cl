@@ -8,24 +8,24 @@ import java.net.URISyntaxException;
  */
 public final class RedirectSpecification {
 
-    private final URI sourceURI;
-    private final URI expectedDestination;
+    private final String sourceURI;
+    private final String expectedDestination;
 
 
-    public RedirectSpecification(String sourceURI, String expectedDestinationURI) throws URISyntaxException {
-        this(new URI(sourceURI.trim()), new URI(expectedDestinationURI.trim()));
-    }
+//    public RedirectSpecification(String sourceURI, String expectedDestinationURI) throws URISyntaxException {
+//        this(new URI(sourceURI.trim()), new URI(expectedDestinationURI.trim()));
+//    }
 
-    public RedirectSpecification(URI sourceURI, URI expectedDestination) {
+    public RedirectSpecification(String sourceURI, String expectedDestination) {
         this.sourceURI = sourceURI;
         this.expectedDestination = expectedDestination;
     }
 
-    public URI getSourceURI() {
+    public String getSourceURI() {
         return sourceURI;
     }
 
-    public URI getExpectedDestination() {
+    public String getExpectedDestination() {
         return expectedDestination;
     }
 

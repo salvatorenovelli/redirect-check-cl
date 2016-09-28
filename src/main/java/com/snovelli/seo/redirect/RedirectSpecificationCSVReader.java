@@ -1,11 +1,11 @@
 package com.snovelli.seo.redirect;
 
 import com.snovelli.model.RedirectSpecification;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,11 +39,7 @@ public class RedirectSpecificationCSVReader {
     private static Function<String[], RedirectSpecification> toRedirectSpecification() {
         return strings -> {
             if (strings.length > 1) {
-                try {
-                    return new RedirectSpecification(strings[0], strings[1]);
-                } catch (URISyntaxException e) {
-                    logger.warn("Unable to parse URI: " + e.getMessage());
-                }
+                return new RedirectSpecification(strings[0], strings[1]);
             } else {
                 if (strings.length > 0) {
                     logger.warn("Missing parameter in: " + Arrays.toString(strings));
