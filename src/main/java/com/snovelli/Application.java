@@ -54,12 +54,12 @@ public class Application {
 
             logger.info("Running analysis... (this may take several minutes)");
             application.runAnalysis();
+            long elapsedTime = (System.currentTimeMillis() - start) / 1000;
+            System.out.println("Analysis complete in " + elapsedTime + " secs. :)");
 
         } catch (Throwable e) {
             logger.error("Error while running analysis", e);
         } finally {
-            long elapsedTime = (System.currentTimeMillis() - start) / 1000;
-            System.out.println("Analysis complete in " + elapsedTime + " secs. :)");
             pressKey();
         }
 
