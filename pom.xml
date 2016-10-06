@@ -21,7 +21,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <executable.version>0.1.0.0</executable.version>
+        <executable.version>0.6.1.0</executable.version>
     </properties>
 
     <dependencies>
@@ -64,7 +64,7 @@
 
                         <configuration>
                             <headerType>console</headerType>
-                            <outfile>target/${project.artifactId}.exe</outfile>
+                            <outfile>target/${project.artifactId}-${project.version}.exe</outfile>
                             <jar>target/${project.artifactId}-${project.version}.jar</jar>
                             <jre>
                                 <minVersion>1.8.0</minVersion>
