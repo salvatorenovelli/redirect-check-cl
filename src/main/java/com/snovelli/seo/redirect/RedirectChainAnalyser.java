@@ -4,6 +4,7 @@ import com.snovelli.http.HttpResponse;
 import com.snovelli.model.HttpClientRequestFactory;
 import com.snovelli.model.RedirectChain;
 import com.snovelli.model.RedirectChainElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.FOUND;
+import static org.springframework.http.HttpStatus.MOVED_PERMANENTLY;
+import static org.springframework.http.HttpStatus.SEE_OTHER;
 
 /**
  * Created by Salvatore on 24/04/2016.
@@ -41,7 +45,7 @@ public class RedirectChainAnalyser {
 
         try {
 
-            URI currentURI = new URI(startURI.trim());
+            URI currentURI = getAbsoluteURI(startURI);
             HttpResponse curResponse = null;
 
             while (curResponse == null || isRedirect(curResponse.getStatusCode())) {
@@ -73,6 +77,15 @@ public class RedirectChainAnalyser {
         return result;
 
 
+    }
+
+    private URI getAbsoluteURI(String startURI) throws URISyntaxException {
+
+        if (!startURI.startsWith("http")) {
+            startURI = "http://" + startURI;
+        }
+
+        return new URI(startURI.trim());
     }
 
     private boolean isRedirect(HttpStatus status) {
