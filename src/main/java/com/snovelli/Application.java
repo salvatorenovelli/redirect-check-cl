@@ -6,6 +6,7 @@ import com.snovelli.model.RedirectCheckResponse;
 import com.snovelli.model.RedirectSpecification;
 import com.snovelli.seo.redirect.RedirectChainAnalyser;
 import com.snovelli.seo.redirect.RedirectSpecificationCSVReader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +52,11 @@ public class Application {
 
         try {
 
-            logger.info("Running analysis...");
+            logger.info("Running analysis... (this may take several minutes)");
             application.runAnalysis();
 
+        } catch (Throwable e) {
+            logger.error("Error while running analysis", e);
         } finally {
             long elapsedTime = (System.currentTimeMillis() - start) / 1000;
             System.out.println("Analysis complete in " + elapsedTime + " secs. :)");
