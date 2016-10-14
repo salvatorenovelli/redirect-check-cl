@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/salvatorenovelli/redirect-check-cl.svg?branch=master)](https://travis-ci.org/salvatorenovelli/redirect-check-cl)
 # redirect-check-cl
 
 A command-line utility to verify that a given set of URL correctly redirect to the expected location. 
