@@ -16,9 +16,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-/**
- * Created by Salvatore on 02/05/2016.
- */
 public class RedirectSpecificationCSVReaderTest {
 
     RedirectSpecificationCSVReader sut;

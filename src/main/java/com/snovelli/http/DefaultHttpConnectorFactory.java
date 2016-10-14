@@ -8,9 +8,6 @@ import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.net.URI;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
 
 @Component
 public class DefaultHttpConnectorFactory implements HttpClientRequestFactory {

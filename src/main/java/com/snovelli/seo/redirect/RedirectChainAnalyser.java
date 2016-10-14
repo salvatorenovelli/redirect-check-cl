@@ -18,10 +18,6 @@ import static org.springframework.http.HttpStatus.FOUND;
 import static org.springframework.http.HttpStatus.MOVED_PERMANENTLY;
 import static org.springframework.http.HttpStatus.SEE_OTHER;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
-
 @Component
 public class RedirectChainAnalyser {
 

@@ -9,9 +9,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
 public final class DefaultHttpRequest implements HttpRequest {
 
     private final URI uri;

@@ -6,9 +6,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
 public final class RedirectChain {
 
     private static final String REDIRECT_LOOP = "Redirect loop";

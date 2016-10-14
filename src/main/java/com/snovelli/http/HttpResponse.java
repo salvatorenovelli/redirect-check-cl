@@ -4,9 +4,6 @@ import org.springframework.http.HttpStatus;
 
 import java.net.URI;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
 public class HttpResponse {
 
     private final HttpStatus status;

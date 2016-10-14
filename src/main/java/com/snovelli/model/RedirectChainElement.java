@@ -5,9 +5,6 @@ import org.springframework.http.HttpStatus;
 import java.net.URI;
 import java.net.URL;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
 public final class RedirectChainElement {
     private final HttpStatus status;
     private final URI destinationURI;

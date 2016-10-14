@@ -17,9 +17,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- * Created by Salvatore on 02/05/2016.
- */
 public class RedirectSpecificationCSVReader {
 
 

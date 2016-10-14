@@ -9,9 +9,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
 public class MockHttpClientRequestFactoryBuilder {
 
 

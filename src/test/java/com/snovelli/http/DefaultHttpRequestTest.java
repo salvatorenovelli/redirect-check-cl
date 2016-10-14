@@ -10,9 +10,6 @@ import java.net.URI;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-/**
- * Created by Salvatore on 24/04/2016.
- */
 public class DefaultHttpRequestTest {
 
     @Test

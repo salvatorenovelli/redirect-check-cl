@@ -5,9 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by Salvatore on 02/05/2016.
- */
 @Component
 class ShutdownManager {
 
