@@ -1,9 +1,9 @@
-# redirect-check
+# redirect-check-cl
 
 A command-line utility to verify that a given set of URL correctly redirect to the expected location. 
 
 ###Input:
-Takes a CSV file as an imput formatted as sourceURI`,`expectedDestinationURI`
+Takes a CSV file as an imput formatted as `sourceURI`,`expectedDestinationURI`
 
 Example: 
 
