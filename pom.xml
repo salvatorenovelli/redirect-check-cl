@@ -38,6 +38,11 @@
             <version>0.0.1</version>
         </dependency>
         <dependency>
+            <groupId>com.github.salvatorenovelli</groupId>
+            <artifactId>redirect-check</artifactId>
+            <version>v0.0.4</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -112,6 +117,14 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
 
 </project>
