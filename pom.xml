@@ -33,8 +33,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.salvatorenovelli</groupId>
-            <artifactId>redirect-check</artifactId>
+            <groupId>com.github.salvatorenovelli.redirect-check</groupId>
+            <artifactId>redirect-check-api</artifactId>
             <version>v0.0.4</version>
         </dependency>
         <dependency>
