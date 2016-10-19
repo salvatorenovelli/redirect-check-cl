@@ -1,4 +1,4 @@
-package com.snovelli.model;
+package com.github.salvatorenovelli.model;
 
 
 

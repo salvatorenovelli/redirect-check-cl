@@ -1,4 +1,4 @@
-package com.snovelli.http;
+package com.github.salvatorenovelli.http;
 
 
 import org.springframework.http.HttpMethod;

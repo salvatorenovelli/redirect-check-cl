@@ -1,4 +1,4 @@
-package com.snovelli;
+package com.github.salvatorenovelli;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

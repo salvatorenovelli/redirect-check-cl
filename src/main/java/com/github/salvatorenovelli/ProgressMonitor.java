@@ -1,4 +1,4 @@
-package com.snovelli;
+package com.github.salvatorenovelli;
 
 import org.apache.http.annotation.ThreadSafe;
 

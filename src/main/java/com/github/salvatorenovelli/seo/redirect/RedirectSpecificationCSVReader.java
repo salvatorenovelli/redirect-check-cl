@@ -1,6 +1,6 @@
-package com.snovelli.seo.redirect;
+package com.github.salvatorenovelli.seo.redirect;
 
-import com.snovelli.model.RedirectSpecification;
+import com.github.salvatorenovelli.model.RedirectSpecification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

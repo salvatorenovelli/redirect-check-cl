@@ -1,9 +1,9 @@
-package com.snovelli;
+package com.github.salvatorenovelli;
 
-import com.snovelli.http.DefaultHttpConnectorFactory;
-import com.snovelli.model.RedirectCheckResponse;
-import com.snovelli.model.RedirectSpecification;
-import com.snovelli.seo.redirect.RedirectSpecificationCSVReader;
+import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
+import com.github.salvatorenovelli.model.RedirectSpecification;
+import com.github.salvatorenovelli.model.RedirectCheckResponse;
+import com.github.salvatorenovelli.seo.redirect.RedirectSpecificationCSVReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

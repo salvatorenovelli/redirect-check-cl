@@ -1,11 +1,10 @@
-package com.snovelli.seo.redirect;
+package com.github.salvatorenovelli.seo.redirect;
 
-import com.snovelli.model.RedirectSpecification;
-import org.junit.Before;
+import com.github.salvatorenovelli.model.RedirectSpecification;
+
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
