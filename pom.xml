@@ -33,11 +33,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>snove.seo</groupId>
-            <artifactId>redirect-check-api</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.salvatorenovelli</groupId>
             <artifactId>redirect-check</artifactId>
             <version>v0.0.4</version>
