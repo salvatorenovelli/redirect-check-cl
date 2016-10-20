@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ThreadSafe
 public class ProgressMonitor implements Runnable {
 
-    public static final int COMPLETION_BAR_WIDTH = 30;
+    public static final int COMPLETION_BAR_WIDTH = 50;
 
     private final int totalTicksRequired;
     private final Thread thread = new Thread(this, ProgressMonitor.class.getName());
