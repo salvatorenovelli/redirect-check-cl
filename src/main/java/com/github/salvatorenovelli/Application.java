@@ -1,8 +1,8 @@
 package com.github.salvatorenovelli;
 
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
-import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
+import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.seo.redirect.RedirectSpecificationCSVReader;
@@ -17,8 +17,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-
 
 
 public class Application {
@@ -55,10 +53,10 @@ public class Application {
 
         try {
 
-            logger.info("Running analysis... (this may take several minutes)");
+            System.out.println("Running analysis... (this may take several minutes)");
             application.runAnalysis();
             long elapsedTime = (System.currentTimeMillis() - start) / 1000;
-            System.out.println("Analysis complete in " + elapsedTime + " secs. :)");
+            System.out.println("\rAnalysis complete in " + elapsedTime + " secs. :)");
 
         } catch (Throwable e) {
             logger.error("Error while running analysis", e);
@@ -81,7 +79,7 @@ public class Application {
 
     private static void pressKey() {
         try {
-            System.out.println("Press any key to exit...");
+            System.out.println("\rPress any key to exit...");
             System.in.read();
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,10 +98,14 @@ public class Application {
     }
 
     private List<RedirectCheckResponse> analyseRedirectsInCSV(String filePath) throws IOException {
-        List<RedirectSpecification> specs = RedirectSpecificationCSVReader.parse(Paths.get(filePath));
-        progressMonitor = new ProgressMonitor(specs.size());
-        progressMonitor.startPrinting();
-        return specs.parallelStream().map(this::checkRedirect).collect(Collectors.toList());
+        try {
+            List<RedirectSpecification> specs = RedirectSpecificationCSVReader.parse(Paths.get(filePath));
+            progressMonitor = new ProgressMonitor(specs.size());
+            progressMonitor.startPrinting();
+            return specs.parallelStream().map(this::checkRedirect).collect(Collectors.toList());
+        } finally {
+            progressMonitor.stopPrinting();
+        }
     }
 
 

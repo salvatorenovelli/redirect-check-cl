@@ -12,6 +12,7 @@ public class ProgressMonitor implements Runnable {
     private final int totalTicksRequired;
     private final Thread thread = new Thread(this, ProgressMonitor.class.getName());
     private final AtomicInteger ticks = new AtomicInteger(0);
+    private volatile boolean stopPrinting = false;
 
     public ProgressMonitor(int totalTicksRequired) {
         this.totalTicksRequired = totalTicksRequired;
@@ -44,7 +45,7 @@ public class ProgressMonitor implements Runnable {
 
     @Override
     public void run() {
-        while (getPercentage() < 100) {
+        while (getPercentage() < 100 && !stopPrinting) {
             try {
                 printCompletionPercentage();
                 Thread.sleep(200);
@@ -54,5 +55,13 @@ public class ProgressMonitor implements Runnable {
         }
 
         printCompletionPercentage();
+    }
+
+    public void stopPrinting() {
+        stopPrinting = true;
+        try {
+            thread.join();
+        } catch (InterruptedException ignore) {
+        }
     }
 }
