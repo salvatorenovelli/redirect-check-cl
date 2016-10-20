@@ -2,7 +2,8 @@ package com.github.salvatorenovelli.model;
 
 
 
-import snove.seo.redirectcheck.domain.HttpRequest;
+
+import com.github.salvatorenovelli.redirectcheck.domain.HttpRequest;
 
 import java.net.URI;
 

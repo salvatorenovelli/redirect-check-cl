@@ -3,6 +3,8 @@ package com.github.salvatorenovelli;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
+import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
+import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.seo.redirect.RedirectSpecificationCSVReader;
 
 import org.slf4j.Logger;
@@ -16,8 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import snove.seo.redirectcheck.domain.RedirectChainAnalyser;
-import snove.seo.redirectcheck.model.RedirectChain;
+
 
 
 public class Application {

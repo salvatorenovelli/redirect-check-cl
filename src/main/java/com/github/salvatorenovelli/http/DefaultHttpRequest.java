@@ -1,9 +1,11 @@
 package com.github.salvatorenovelli.http;
 
 
+import com.github.salvatorenovelli.redirectcheck.domain.HttpRequest;
+import com.github.salvatorenovelli.redirectcheck.model.HttpResponse;
+
 import org.springframework.http.HttpMethod;
-import snove.seo.redirectcheck.domain.HttpRequest;
-import snove.seo.redirectcheck.model.HttpResponse;
+
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

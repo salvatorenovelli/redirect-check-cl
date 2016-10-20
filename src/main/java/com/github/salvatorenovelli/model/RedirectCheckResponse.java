@@ -1,8 +1,10 @@
 package com.github.salvatorenovelli.model;
 
+import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
+import com.github.salvatorenovelli.redirectcheck.model.RedirectChainElement;
+
 import org.springframework.http.HttpStatus;
-import snove.seo.redirectcheck.model.RedirectChain;
-import snove.seo.redirectcheck.model.RedirectChainElement;
+
 
 import java.util.List;
 
