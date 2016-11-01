@@ -41,12 +41,6 @@ public class ParallelRedirectSpecAnalyserTest {
     @Before
     public void setUp() throws Exception {
         sut = new ParallelRedirectSpecAnalyser(redirectSpecAnalyser, redirectCheckResponseFactory, NUM_WORKERS);
-
-        when(redirectSpecAnalyser.analyseRedirectChain(EXAMPLE_URL)).thenReturn(REDIRECT_CHAIN);
-        for (RedirectSpecification curSpec : REDIRECT_CHECK_SPECS) {
-            when(redirectCheckResponseFactory.createResponse(curSpec, REDIRECT_CHAIN)).thenReturn(REDIRECT_CHAIN_RESPONSE);
-        }
-
     }
 
     @Test
@@ -55,7 +49,6 @@ public class ParallelRedirectSpecAnalyserTest {
         assertNotNull(responseList);
         assertThat(responseList, hasSize(0));
     }
-
 
     @Test
     public void analysisShouldWrapResponse() throws Exception {
