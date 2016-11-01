@@ -9,8 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,7 @@ public class ParallelRedirectSpecAnalyserTest {
     @Mock private RedirectChainAnalyser redirectSpecAnalyser;
     @Mock private RedirectCheckResponseFactory redirectCheckResponseFactory;
     @Mock private RedirectCheckResponse REDIRECT_CHAIN_RESPONSE;
+    private List<RedirectCheckResponse> expectedResponses = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
@@ -56,8 +59,39 @@ public class ParallelRedirectSpecAnalyserTest {
 
     @Test
     public void analysisShouldWrapResponse() throws Exception {
-        List<RedirectCheckResponse> redirectCheckResponses = sut.runParallelAnalysis(REDIRECT_CHECK_SPECS);
+        List<RedirectCheckResponse> redirectCheckResponses = sut.runParallelAnalysis(createTestSpecWithSize(1));
         assertThat(redirectCheckResponses, hasSize(1));
-        assertThat(redirectCheckResponses.get(0), is(REDIRECT_CHAIN_RESPONSE));
+        assertThat(redirectCheckResponses.get(0), is(expectedResponses.get(0)));
+    }
+
+    @Test
+    public void multipleSpecShouldBeAllProcessed() throws Exception {
+        List<RedirectCheckResponse> redirectCheckResponses = sut.runParallelAnalysis(createTestSpecWithSize(10));
+        assertThat(redirectCheckResponses, hasSize(10));
+
+        for (int i = 0; i < redirectCheckResponses.size(); i++) {
+            assertThat(redirectCheckResponses.get(i), is(expectedResponses.get(i)));
+        }
+    }
+
+    private List<RedirectSpecification> createTestSpecWithSize(int size) {
+
+        List<RedirectSpecification> spec = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            RedirectSpecification curSpec = new RedirectSpecification("http://www.example.com/" + i, "http://www.example.com/" + i + "/dst");
+
+            RedirectChain curResponse = new RedirectChain();
+            RedirectCheckResponse curChainResponse = Mockito.mock(RedirectCheckResponse.class);
+
+            expectedResponses.add(curChainResponse);
+            when(redirectSpecAnalyser.analyseRedirectChain("http://www.example.com/" + i)).thenReturn(curResponse);
+            when(redirectCheckResponseFactory.createResponse(curSpec, curResponse)).thenReturn(curChainResponse);
+
+            spec.add(curSpec);
+        }
+
+        return spec;
+
     }
 }
