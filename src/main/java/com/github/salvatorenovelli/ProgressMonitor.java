@@ -1,6 +1,6 @@
 package com.github.salvatorenovelli;
 
-import org.apache.http.annotation.ThreadSafe;
+import net.jcip.annotations.ThreadSafe;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

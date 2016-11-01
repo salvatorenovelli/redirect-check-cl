@@ -3,10 +3,10 @@ package com.github.salvatorenovelli;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
+import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.seo.redirect.RedirectSpecificationCSVReader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class Application {
         this.csvOutput = new FileWriter(new File(sourceFilename + "_out.csv"));
         csvOutput.append(csvHeader() + "\n");
 
-        this.analyser = new RedirectChainAnalyser(new DefaultHttpConnectorFactory());
+        this.analyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
     }
 
     public static void main(String[] args) throws IOException {

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -31,7 +32,7 @@ public class ParallelRedirectSpecAnalyserTest {
     private static final String EXAMPLE_URL = "http://www.example.com";
     private static final List<RedirectSpecification> REDIRECT_CHECK_SPECS = Arrays.asList(new RedirectSpecification(EXAMPLE_URL, "http://www.example.com/"));
     private static final List<RedirectSpecification> EMPTY_SPECS = Collections.emptyList();
-    private static final int NUM_WORKERS = 2;
+    private static final int NUM_WORKERS = 10;
     ParallelRedirectSpecAnalyser sut;
     @Mock private RedirectChainAnalyser redirectSpecAnalyser;
     @Mock private RedirectCheckResponseFactory redirectCheckResponseFactory;
@@ -64,6 +65,30 @@ public class ParallelRedirectSpecAnalyserTest {
 
         for (int i = 0; i < redirectCheckResponses.size(); i++) {
             assertThat(redirectCheckResponses.get(i), is(expectedResponses.get(i)));
+        }
+    }
+
+    @Test(timeout = 5000)
+    public void multipleSpecsShouldBeAnalysedInParallel() throws Exception {
+        int GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS = Runtime.getRuntime().availableProcessors() + 5;
+
+        CountDownLatch latch = new CountDownLatch(GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS);
+
+        sut = new ParallelRedirectSpecAnalyser(s -> {
+            awaitForOtherThreads(latch);
+            return new RedirectChain();
+        }, redirectCheckResponseFactory, GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS);
+
+        sut.runParallelAnalysis(createTestSpecWithSize(GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS));
+
+    }
+
+    private void awaitForOtherThreads(CountDownLatch latch) {
+        try {
+            latch.countDown();
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
