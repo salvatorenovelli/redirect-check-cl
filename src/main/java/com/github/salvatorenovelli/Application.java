@@ -115,11 +115,11 @@ public class Application {
 
     private void tocsv(RedirectCheckResponse cr) {
         List<String> fields = Arrays.asList(
-                cr.getSourceURI().toString(),
+                cr.getSourceURI(),
                 cr.getStatus().toString(),
                 cr.getStatusMessage(),
-                cr.getExpectedDestinationURI().toString(),
-                cr.getActualDestinationURI() != null ? cr.getActualDestinationURI().toString() : "n/a",
+                cr.getExpectedDestinationURI(),
+                cr.getActualDestinationURI() != null ? cr.getActualDestinationURI() : "n/a",
                 cr.getLastHttpStatus() != -1 ? "" + cr.getLastHttpStatus() : "n/a"
         );
 
