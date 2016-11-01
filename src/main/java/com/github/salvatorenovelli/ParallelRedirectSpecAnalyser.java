@@ -3,6 +3,7 @@ package com.github.salvatorenovelli;
 
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
+import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import org.slf4j.Logger;
@@ -15,9 +16,11 @@ public class ParallelRedirectSpecAnalyser {
 
     private static final Logger logger = LoggerFactory.getLogger(ParallelRedirectSpecAnalyser.class);
     private final RedirectChainAnalyser analyser;
+    private RedirectCheckResponseFactory redirectCheckResponseFactory;
 
-    public ParallelRedirectSpecAnalyser(RedirectChainAnalyser redirectSpecAnalyser, int numWorkers) {
+    public ParallelRedirectSpecAnalyser(RedirectChainAnalyser redirectSpecAnalyser, RedirectCheckResponseFactory redirectCheckResponseFactory, int numWorkers) {
         this.analyser = redirectSpecAnalyser;
+        this.redirectCheckResponseFactory = redirectCheckResponseFactory;
         setNumWorker(numWorkers);
     }
 
@@ -28,7 +31,7 @@ public class ParallelRedirectSpecAnalyser {
     private RedirectCheckResponse checkRedirect(RedirectSpecification spec) {
         logger.debug("Analysing " + spec);
         RedirectChain redirectChain = analyser.analyseRedirectChain(spec.getSourceURI());
-        return new RedirectCheckResponse(spec, redirectChain);
+        return redirectCheckResponseFactory.createResponse(spec, redirectChain);
     }
 
 

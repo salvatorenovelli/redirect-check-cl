@@ -2,13 +2,11 @@ package com.github.salvatorenovelli.model;
 
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChainElement;
-
 import org.springframework.http.HttpStatus;
-
 
 import java.util.List;
 
-public final class RedirectCheckResponse {
+public class RedirectCheckResponse {
 
 
     private final Status status;
