@@ -27,10 +27,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ParallelRedirectSpecAnalyserTest {
 
-
-    public static final RedirectChain REDIRECT_CHAIN = new RedirectChain();
-    private static final String EXAMPLE_URL = "http://www.example.com";
-    private static final List<RedirectSpecification> REDIRECT_CHECK_SPECS = Arrays.asList(new RedirectSpecification(EXAMPLE_URL, "http://www.example.com/"));
     private static final List<RedirectSpecification> EMPTY_SPECS = Collections.emptyList();
     private static final int NUM_WORKERS = 10;
     ParallelRedirectSpecAnalyser sut;
