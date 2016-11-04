@@ -3,9 +3,9 @@ package com.github.salvatorenovelli;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
+import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
-import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.seo.redirect.RedirectSpecificationCSVReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +16,17 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
 
 
 public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final int NUM_WORKERS = 50;
-    private final RedirectChainAnalyser analyser;
+    private final RedirectChainAnalyser redirectChainAnalyser;
     private final String filename;
     private final FileWriter csvOutput;
-    private ProgressMonitor progressMonitor;
+    private TextProgressBar progressBar;
 
 
     private Application(String sourceFilename) throws IOException {
@@ -34,7 +34,7 @@ public class Application {
         this.csvOutput = new FileWriter(new File(sourceFilename + "_out.csv"));
         csvOutput.append(csvHeader() + "\n");
 
-        this.analyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
+        this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
     }
 
     public static void main(String[] args) throws IOException {
@@ -86,7 +86,7 @@ public class Application {
         }
     }
 
-    private void runAnalysis() throws IOException {
+    private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
         List<RedirectCheckResponse> responses = analyseRedirectsInCSV(filename);
         responses.forEach(this::tocsv);
         csvOutput.close();
@@ -97,14 +97,20 @@ public class Application {
         System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", String.valueOf(i));
     }
 
-    private List<RedirectCheckResponse> analyseRedirectsInCSV(String filePath) throws IOException {
+    private List<RedirectCheckResponse> analyseRedirectsInCSV(String filePath) throws IOException, ExecutionException, InterruptedException {
         try {
             List<RedirectSpecification> specs = RedirectSpecificationCSVReader.parse(Paths.get(filePath));
-            progressMonitor = new ProgressMonitor(specs.size());
-            progressMonitor.startPrinting();
-            return specs.parallelStream().map(this::checkRedirect).collect(Collectors.toList());
+            progressBar = new TextProgressBar(specs.size());
+            progressBar.startPrinting();
+
+            ParallelRedirectSpecAnalyser analyser = new ParallelRedirectSpecAnalyser(
+                    redirectChainAnalyser, new RedirectCheckResponseFactory(), NUM_WORKERS);
+
+            analyser.setProgressMonitor(progressBar);
+
+            return analyser.runParallelAnalysis(specs);
         } finally {
-            progressMonitor.stopPrinting();
+            progressBar.stopPrinting();
         }
     }
 
@@ -136,17 +142,6 @@ public class Application {
             csvOutput.append(field);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-
-    private RedirectCheckResponse checkRedirect(RedirectSpecification spec) {
-        try {
-            logger.debug("Analysing " + spec);
-            RedirectChain redirectChain = analyser.analyseRedirectChain(spec.getSourceURI());
-            return new RedirectCheckResponse(spec, redirectChain);
-        } finally {
-            progressMonitor.tick();
         }
     }
 }

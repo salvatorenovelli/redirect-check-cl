@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -22,7 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ParallelRedirectSpecAnalyserTest {
@@ -38,6 +37,7 @@ public class ParallelRedirectSpecAnalyserTest {
     @Before
     public void setUp() throws Exception {
         sut = new ParallelRedirectSpecAnalyser(redirectSpecAnalyser, redirectCheckResponseFactory, NUM_WORKERS);
+        when(redirectCheckResponseFactory.createResponse(any(), any())).thenReturn(Mockito.mock(RedirectCheckResponse.class));
     }
 
     @Test
@@ -62,6 +62,16 @@ public class ParallelRedirectSpecAnalyserTest {
         for (int i = 0; i < redirectCheckResponses.size(); i++) {
             assertThat(redirectCheckResponses.get(i), is(expectedResponses.get(i)));
         }
+    }
+
+    @Test
+    public void completedRedirectCheckShouldTriggerProgress() throws Exception {
+        ProgressMonitor progressMonitor = Mockito.mock(ProgressMonitor.class);
+        sut.setProgressMonitor(progressMonitor);
+
+        sut.runParallelAnalysis(createTestSpecWithSize(10));
+
+        verify(progressMonitor, times(10)).tick();
     }
 
     @Test(timeout = 5000)
