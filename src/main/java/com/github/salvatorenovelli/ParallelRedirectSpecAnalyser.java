@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class ParallelRedirectSpecAnalyser {
@@ -20,7 +22,8 @@ public class ParallelRedirectSpecAnalyser {
     private final RedirectChainAnalyser analyser;
     private final int numWorkers;
     private RedirectCheckResponseFactory redirectCheckResponseFactory;
-    private ProgressMonitor progressMonitor = () -> { };
+    private ProgressMonitor progressMonitor = () -> {
+    };
 
     public ParallelRedirectSpecAnalyser(RedirectChainAnalyser redirectChainAnalyser, RedirectCheckResponseFactory redirectCheckResponseFactory, int numWorkers) {
         this.analyser = redirectChainAnalyser;
@@ -36,27 +39,13 @@ public class ParallelRedirectSpecAnalyser {
 
         ExecutorService executorService = Executors.newFixedThreadPool(numWorkers);
 
-        List<Future<RedirectCheckResponse>> collect = redirectCheckSpecs.stream()
-                .map(spec -> (Callable<RedirectCheckResponse>) () -> checkRedirect(spec))
-                .map(executorService::submit)
+        List<CompletableFuture<RedirectCheckResponse>> collect = redirectCheckSpecs.stream()
+                .map(spec -> CompletableFuture.supplyAsync(() -> checkRedirect(spec), executorService))
                 .collect(Collectors.toList());
 
-        return collect.stream()
-                .map(this::getPossibleRedirectCheckResponse)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        return collect.stream().map(CompletableFuture::join).collect(Collectors.toList());
     }
 
-    private Optional<RedirectCheckResponse> getPossibleRedirectCheckResponse(Future<RedirectCheckResponse> redirectCheckResponseFuture) {
-        try {
-            RedirectCheckResponse value = redirectCheckResponseFuture.get();
-            return Optional.of(value);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
 
     private RedirectCheckResponse checkRedirect(RedirectSpecification spec) {
         try {
