@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -31,10 +32,16 @@ public class Application {
 
     private Application(String sourceFilename) throws IOException {
         this.filename = sourceFilename;
-        this.csvOutput = new FileWriter(new File(sourceFilename + "_out.csv"));
-        csvOutput.append(csvHeader() + "\n");
 
-        this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
+        String outFileName = sourceFilename + "_out.csv";
+        try {
+            this.csvOutput = new FileWriter(new File(outFileName));
+            csvOutput.append(csvHeader() + "\n");
+            this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Unable to create output file: " + outFileName+". File may be busy or write protected.");
+        }
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -48,10 +55,9 @@ public class Application {
 
         long start = System.currentTimeMillis();
 
-        Application application = new Application(args[0]);
-        application.setNumWorkers(NUM_WORKERS);
 
         try {
+            Application application = new Application(args[0]);
 
             System.out.println("Running analysis... (this may take several minutes)");
             application.runAnalysis();
@@ -59,7 +65,7 @@ public class Application {
             System.out.println("\rAnalysis complete in " + elapsedTime + " secs. :)");
 
         } catch (Throwable e) {
-            logger.error("Error while running analysis", e);
+            logger.error("Error while running analysis: " + e.getMessage());
         } finally {
             pressKey();
         }
@@ -68,7 +74,7 @@ public class Application {
     }
 
     private static void setUncaughtExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.warn("Uncaught exception:", e));
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error("Uncaught exception:", e));
     }
 
     private static void printUsage() {
@@ -91,10 +97,6 @@ public class Application {
         responses.forEach(this::tocsv);
         csvOutput.close();
 
-    }
-
-    private void setNumWorkers(int i) {
-        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", String.valueOf(i));
     }
 
     private List<RedirectCheckResponse> analyseRedirectsInCSV(String filePath) throws IOException, ExecutionException, InterruptedException {
