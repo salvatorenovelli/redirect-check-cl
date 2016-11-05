@@ -24,23 +24,10 @@ public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final int NUM_WORKERS = 50;
     private final RedirectChainAnalyser redirectChainAnalyser;
-    private final String filename;
     private final RedirectCheckResponseCsvSerializer csvWriter;
+    private final String filename;
 
     private TextProgressBar progressBar;
-
-    private Application(String sourceFilename) throws IOException {
-        this.filename = sourceFilename;
-
-        String outFileName = sourceFilename + "_out.csv";
-        try {
-            this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
-            this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Unable to create output file: " + outFileName + ". File may be busy or write protected.");
-        }
-
-    }
 
     public static void main(String[] args) throws IOException {
 
@@ -56,12 +43,10 @@ public class Application {
 
         try {
             Application application = new Application(args[0]);
-
             System.out.println("Running analysis... (this may take several minutes)");
             application.runAnalysis();
             long elapsedTime = (System.currentTimeMillis() - start) / 1000;
             System.out.println("\rAnalysis complete in " + elapsedTime + " secs. :)");
-
         } catch (Throwable e) {
             logger.error("Error while running analysis: " + e.getMessage());
         } finally {
@@ -71,23 +56,17 @@ public class Application {
 
     }
 
-    private static void setUncaughtExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error("Uncaught exception:", e));
-    }
+    private Application(String sourceFilename) throws IOException {
+        this.filename = sourceFilename;
 
-    private static void printUsage() {
-        System.err.println("Please specify CSV filename");
-        pressKey();
-        System.exit(1);
-    }
-
-    private static void pressKey() {
+        String outFileName = sourceFilename + "_out.csv";
         try {
-            System.out.println("\rPress any key to exit...");
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
+            this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
+            this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Unable to create output file: " + outFileName + ". File may be busy or write protected.");
         }
+
     }
 
     private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
@@ -112,5 +91,22 @@ public class Application {
         }
     }
 
+    private static void setUncaughtExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error("Uncaught exception:", e));
+    }
 
+    private static void printUsage() {
+        System.err.println("Please specify CSV filename");
+        pressKey();
+        System.exit(1);
+    }
+
+    private static void pressKey() {
+        try {
+            System.out.println("\rPress any key to exit...");
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
