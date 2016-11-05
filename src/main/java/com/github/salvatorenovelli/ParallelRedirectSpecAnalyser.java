@@ -38,12 +38,15 @@ public class ParallelRedirectSpecAnalyser {
     public List<RedirectCheckResponse> runParallelAnalysis(List<RedirectSpecification> redirectCheckSpecs) throws ExecutionException, InterruptedException {
 
         ExecutorService executorService = Executors.newFixedThreadPool(numWorkers);
+        try {
+            List<CompletableFuture<RedirectCheckResponse>> collect = redirectCheckSpecs.stream()
+                    .map(spec -> CompletableFuture.supplyAsync(() -> checkRedirect(spec), executorService))
+                    .collect(Collectors.toList());
 
-        List<CompletableFuture<RedirectCheckResponse>> collect = redirectCheckSpecs.stream()
-                .map(spec -> CompletableFuture.supplyAsync(() -> checkRedirect(spec), executorService))
-                .collect(Collectors.toList());
-
-        return collect.stream().map(CompletableFuture::join).collect(Collectors.toList());
+            return collect.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        } finally {
+            executorService.shutdownNow();
+        }
     }
 
 
