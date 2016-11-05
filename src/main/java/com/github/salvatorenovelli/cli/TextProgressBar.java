@@ -1,4 +1,4 @@
-package com.github.salvatorenovelli;
+package com.github.salvatorenovelli.cli;
 
 import net.jcip.annotations.ThreadSafe;
 

@@ -1,6 +1,7 @@
-package com.github.salvatorenovelli;
+package com.github.salvatorenovelli.seo.redirect;
 
 
+import com.github.salvatorenovelli.cli.ProgressMonitor;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;

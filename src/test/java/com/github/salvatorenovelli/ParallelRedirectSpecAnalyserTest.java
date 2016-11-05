@@ -1,10 +1,12 @@
 package com.github.salvatorenovelli;
 
+import com.github.salvatorenovelli.cli.ProgressMonitor;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
+import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

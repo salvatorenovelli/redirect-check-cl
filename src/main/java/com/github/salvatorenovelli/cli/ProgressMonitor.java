@@ -1,4 +1,4 @@
-package com.github.salvatorenovelli;
+package com.github.salvatorenovelli.cli;
 
 public interface ProgressMonitor {
     void tick();
