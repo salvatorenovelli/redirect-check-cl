@@ -9,9 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Created by Salvatore on 05/11/2016.
- */
 public class RedirectCheckResponseCsvSerializer {
 
     private final FileWriter csvOutput;
