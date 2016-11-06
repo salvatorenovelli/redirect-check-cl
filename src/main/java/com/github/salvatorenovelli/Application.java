@@ -8,7 +8,7 @@ import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
-import com.github.salvatorenovelli.seo.redirect.RedirectSpecificationCSVReader;
+import com.github.salvatorenovelli.seo.redirect.RedirectSpecCSVParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +28,19 @@ public class Application {
     private final String filename;
 
     private TextProgressBar progressBar;
+
+    private Application(String sourceFilename) throws IOException {
+        this.filename = sourceFilename;
+
+        String outFileName = sourceFilename + "_out.csv";
+        try {
+            this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
+            this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Unable to create output file: " + outFileName + ". File may be busy or write protected.");
+        }
+
+    }
 
     public static void main(String[] args) throws IOException {
 
@@ -56,41 +69,6 @@ public class Application {
 
     }
 
-    private Application(String sourceFilename) throws IOException {
-        this.filename = sourceFilename;
-
-        String outFileName = sourceFilename + "_out.csv";
-        try {
-            this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
-            this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Unable to create output file: " + outFileName + ". File may be busy or write protected.");
-        }
-
-    }
-
-    private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
-        List<RedirectCheckResponse> responses = analyseRedirectsInCSV(filename);
-        csvWriter.writeall(responses);
-    }
-
-    private List<RedirectCheckResponse> analyseRedirectsInCSV(String filePath) throws IOException, ExecutionException, InterruptedException {
-        try {
-            List<RedirectSpecification> specs = RedirectSpecificationCSVReader.parse(Paths.get(filePath));
-            progressBar = new TextProgressBar(specs.size());
-            progressBar.startPrinting();
-
-            ParallelRedirectSpecAnalyser analyser = new ParallelRedirectSpecAnalyser(
-                    redirectChainAnalyser, new RedirectCheckResponseFactory(), NUM_WORKERS);
-
-            analyser.setProgressMonitor(progressBar);
-
-            return analyser.runParallelAnalysis(specs);
-        } finally {
-            progressBar.stopPrinting();
-        }
-    }
-
     private static void setUncaughtExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> logger.error("Uncaught exception:", e));
     }
@@ -107,6 +85,28 @@ public class Application {
             System.in.read();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
+        List<RedirectCheckResponse> responses = analyseRedirectsInCSV(filename);
+        csvWriter.writeall(responses);
+    }
+
+    private List<RedirectCheckResponse> analyseRedirectsInCSV(String filePath) throws IOException, ExecutionException, InterruptedException {
+        try {
+            List<RedirectSpecification> specs = new RedirectSpecCSVParser(Paths.get(filePath)).parse();
+            progressBar = new TextProgressBar(specs.size());
+            progressBar.startPrinting();
+
+            ParallelRedirectSpecAnalyser analyser = new ParallelRedirectSpecAnalyser(
+                    redirectChainAnalyser, new RedirectCheckResponseFactory(), NUM_WORKERS);
+
+            analyser.setProgressMonitor(progressBar);
+
+            return analyser.runParallelAnalysis(specs);
+        } finally {
+            progressBar.stopPrinting();
         }
     }
 }
