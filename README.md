@@ -5,7 +5,7 @@ A command-line utility to verify that a given set of URL correctly redirect to t
 
 ##Usage
 
-- Download the latest redirect-check-cl-<version>.exe release from [GitHub][1]
+- Download the latest redirect-check-cl-<version>.exe release from [GitHub Releases][1]
 - Drag your CSV file on the downloaded executable
 - Wait for the process to finish (progress bar at 100%)
 - Press any key to close the program
