@@ -3,13 +3,16 @@ package com.github.salvatorenovelli;
 import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
 import com.github.salvatorenovelli.io.RedirectCheckResponseCsvSerializer;
+import com.github.salvatorenovelli.io.RedirectSpecCSVParser;
+import com.github.salvatorenovelli.io.RedirectSpecExcelParser;
+import com.github.salvatorenovelli.io.RedirectSpecificationParser;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
-import com.github.salvatorenovelli.io.RedirectSpecCSVParser;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,19 +29,30 @@ public class Application {
     private static final int NUM_WORKERS = 50;
     private final RedirectChainAnalyser redirectChainAnalyser;
     private final RedirectCheckResponseCsvSerializer csvWriter;
-    private final String filename;
+
 
     private TextProgressBar progressBar;
+    private RedirectSpecificationParser parser;
 
     private Application(String sourceFilename) throws IOException {
-        this.filename = sourceFilename;
+
 
         String outFileName = sourceFilename + "_out.csv";
+
         try {
+            System.out.println("Opening input file: " + sourceFilename);
+            if (sourceFilename.endsWith(".csv")) {
+                this.parser = new RedirectSpecCSVParser(Paths.get(sourceFilename));
+            } else {
+                this.parser = new RedirectSpecExcelParser(sourceFilename);
+            }
+
             this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
             this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to create output file: " + outFileName + ". File may be busy or write protected.");
+        } catch (InvalidFormatException e) {
+            throw new RuntimeException("Unable to read input file: " + sourceFilename + ":" + e.getMessage());
         }
 
     }
@@ -90,13 +104,14 @@ public class Application {
     }
 
     private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
-        List<RedirectCheckResponse> responses = analyseRedirectsInCSV(filename);
+        List<RedirectCheckResponse> responses = analyseRedirects();
         csvWriter.writeall(responses);
     }
 
-    private List<RedirectCheckResponse> analyseRedirectsInCSV(String filePath) throws IOException, ExecutionException, InterruptedException {
+    private List<RedirectCheckResponse> analyseRedirects() throws IOException, ExecutionException, InterruptedException {
         try {
-            List<RedirectSpecification> specs = new RedirectSpecCSVParser(Paths.get(filePath)).parse();
+            List<RedirectSpecification> specs = parser.parse();
+
             progressBar = new TextProgressBar(specs.size());
             progressBar.startPrinting();
 

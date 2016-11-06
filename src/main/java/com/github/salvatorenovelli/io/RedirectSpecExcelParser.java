@@ -15,26 +15,19 @@ import java.util.stream.StreamSupport;
 
 public class RedirectSpecExcelParser implements RedirectSpecificationParser {
 
-    private final String filename;
+    private final Workbook wb;
 
-    public RedirectSpecExcelParser(String filename) {
-        this.filename = filename;
+    public RedirectSpecExcelParser(String filename) throws IOException, InvalidFormatException {
+        wb = WorkbookFactory.create(new FileInputStream(filename));
     }
 
 
     @Override
     public List<RedirectSpecification> parse() throws IOException {
-        try {
-
-            Workbook wb = WorkbookFactory.create(new FileInputStream(filename));
-            Sheet sheet = wb.getSheetAt(0);
-            return StreamSupport.stream(sheet.spliterator(), false)
-                    .map(this::toRedirectSpecification)
-                    .collect(Collectors.toList());
-
-        } catch (InvalidFormatException e) {
-            throw new RuntimeException(e);
-        }
+        Sheet sheet = wb.getSheetAt(0);
+        return StreamSupport.stream(sheet.spliterator(), false)
+                .map(this::toRedirectSpecification)
+                .collect(Collectors.toList());
     }
 
     private RedirectSpecification toRedirectSpecification(Row row) {
