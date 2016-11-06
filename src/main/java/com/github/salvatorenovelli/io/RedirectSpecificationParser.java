@@ -1,4 +1,4 @@
-package com.github.salvatorenovelli.seo.redirect;
+package com.github.salvatorenovelli.io;
 
 import com.github.salvatorenovelli.model.RedirectSpecification;
 

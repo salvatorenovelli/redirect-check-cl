@@ -1,5 +1,6 @@
 package com.github.salvatorenovelli.seo.redirect;
 
+import com.github.salvatorenovelli.io.RedirectSpecCSVParser;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 
 import org.junit.Test;

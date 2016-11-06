@@ -2,13 +2,14 @@ package com.github.salvatorenovelli;
 
 import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
+import com.github.salvatorenovelli.io.RedirectCheckResponseCsvSerializer;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
-import com.github.salvatorenovelli.seo.redirect.RedirectSpecCSVParser;
+import com.github.salvatorenovelli.io.RedirectSpecCSVParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

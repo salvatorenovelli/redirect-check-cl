@@ -1,4 +1,4 @@
-package com.github.salvatorenovelli;
+package com.github.salvatorenovelli.io;
 
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 
