@@ -7,6 +7,10 @@ public final class RedirectSpecification {
     private final int expectedStatusCode;
 
 
+    public RedirectSpecification(String sourceURI, String expectedDestination) {
+        this(sourceURI,expectedDestination,200);
+    }
+
     public RedirectSpecification(String sourceURI, String expectedDestination, int expectedStatusCode) {
         this.sourceURI = sourceURI;
         this.expectedDestination = expectedDestination;
