@@ -41,6 +41,18 @@ public class RedirectSpecExcelParserTest {
     }
 
     @Test
+    public void specificationWithoutExpectedDestinationShouldBeSkipped() throws Exception {
+        String filename = givenAnExcelFile()
+                .withRow("SourceURI1", "ExpectedDestination1", "1234")
+                .withRow("sourceURI")
+                .get();
+
+        List<RedirectSpecification> parsedSpecs = new RedirectSpecExcelParser(filename).parse();
+
+        assertThat(parsedSpecs, hasSize(1));
+    }
+
+    @Test
     public void whenNoStatusCodeIsSpecifiedShouldDefaultTo200() throws Exception {
 
         String filename = givenAnExcelFile()
