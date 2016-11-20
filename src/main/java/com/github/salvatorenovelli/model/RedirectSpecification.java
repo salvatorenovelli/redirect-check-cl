@@ -4,11 +4,13 @@ public final class RedirectSpecification {
 
     private final String sourceURI;
     private final String expectedDestination;
+    private final int expectedStatusCode;
 
 
-    public RedirectSpecification(String sourceURI, String expectedDestination) {
+    public RedirectSpecification(String sourceURI, String expectedDestination, int expectedStatusCode) {
         this.sourceURI = sourceURI;
         this.expectedDestination = expectedDestination;
+        this.expectedStatusCode = expectedStatusCode;
     }
 
     public String getSourceURI() {
@@ -19,14 +21,16 @@ public final class RedirectSpecification {
         return expectedDestination;
     }
 
+    public int getExpectedStatusCode() {
+        return expectedStatusCode;
+    }
 
     @Override
     public String toString() {
         return "RedirectSpecification{" +
-                "sourceURI=" + sourceURI +
-                ", expectedDestination=" + expectedDestination +
+                "sourceURI='" + sourceURI + '\'' +
+                ", expectedDestination='" + expectedDestination + '\'' +
+                ", expectedStatusCode=" + expectedStatusCode +
                 '}';
     }
-
-
 }

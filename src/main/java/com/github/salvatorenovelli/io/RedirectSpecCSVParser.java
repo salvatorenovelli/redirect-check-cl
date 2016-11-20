@@ -56,7 +56,7 @@ public class RedirectSpecCSVParser implements RedirectSpecificationParser {
         return strings -> {
             currentLine++;
             if (strings.length > 1) {
-                return new RedirectSpecification(strings[0], strings[1]);
+                return new RedirectSpecification(strings[0], strings[1], 200);
             } else {
                 if (strings.length > 0) {
                     logger.warn("Missing expected url in line: {} ", currentLine);

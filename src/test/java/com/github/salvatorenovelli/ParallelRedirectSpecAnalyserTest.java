@@ -105,7 +105,7 @@ public class ParallelRedirectSpecAnalyserTest {
         List<RedirectSpecification> spec = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
-            RedirectSpecification curSpec = new RedirectSpecification("http://www.example.com/" + i, "http://www.example.com/" + i + "/dst");
+            RedirectSpecification curSpec = new RedirectSpecification("http://www.example.com/" + i, "http://www.example.com/" + i + "/dst", 200);
 
             RedirectChain curResponse = new RedirectChain();
             RedirectCheckResponse curChainResponse = Mockito.mock(RedirectCheckResponse.class);

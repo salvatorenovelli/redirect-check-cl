@@ -33,7 +33,7 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
     private RedirectSpecification toRedirectSpecification(Row row) {
         String col1 = row.getCell(0).getStringCellValue();
         String col2 = row.getCell(1).getStringCellValue();
-        return new RedirectSpecification(col1, col2);
+        return new RedirectSpecification(col1, col2, 200);
     }
 
 
