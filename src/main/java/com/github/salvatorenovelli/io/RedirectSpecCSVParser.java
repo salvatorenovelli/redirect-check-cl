@@ -28,7 +28,7 @@ public class RedirectSpecCSVParser implements RedirectSpecificationParser {
         this.inputCsvFile = inputCsvFile;
     }
 
-    @Override
+
     public List<RedirectSpecification> parse() throws IOException {
         try {
             for (String charset : CHARSETS) {
@@ -68,5 +68,10 @@ public class RedirectSpecCSVParser implements RedirectSpecificationParser {
 
     private Predicate<RedirectSpecification> isValid() {
         return redirectSpecification -> redirectSpecification != INVALID_URI_SPEC;
+    }
+
+    @Override
+    public void parse(ParsedSpecificationHandler handler) throws IOException {
+
     }
 }

@@ -1,27 +1,50 @@
 package com.github.salvatorenovelli.io;
 
+import com.github.salvatorenovelli.model.InvalidRedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectSpecification;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RedirectSpecExcelParserTest {
 
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+
+    private List<RedirectSpecification> validSpec = new ArrayList<>();
+    private List<InvalidRedirectSpecification> invalidSpec = new ArrayList<>();
+
+    private ParsedSpecificationHandler handler = new ParsedSpecificationHandler() {
+        @Override
+        public void handleValidSpec(RedirectSpecification spec) {
+            validSpec.add(validSpec.size(), spec);
+        }
+
+        @Override
+        public void handleInvalidSpec(InvalidRedirectSpecification spec) {
+            invalidSpec.add(invalidSpec.size(), spec);
+        }
+    };
 
 
     @Test
@@ -31,25 +54,26 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI1", "ExpectedDestination1", "1234")
                 .get();
 
-        List<RedirectSpecification> parsedSpecs = new RedirectSpecExcelParser(filename).parse();
+        new RedirectSpecExcelParser(filename, handler).parse();
 
-        assertThat(parsedSpecs, hasSize(1));
-        assertThat(parsedSpecs.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(parsedSpecs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
-        assertThat(parsedSpecs.get(0).getExpectedStatusCode(), is(1234));
+        assertThat(validSpec, hasSize(1));
+        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        assertThat(validSpec.get(0).getExpectedStatusCode(), is(1234));
 
     }
 
     @Test
-    public void specificationWithoutExpectedDestinationShouldBeSkipped() throws Exception {
+    public void specificationWithoutExpectedDestinationShouldBeConsideredAsInvalid() throws Exception {
         String filename = givenAnExcelFile()
                 .withRow("SourceURI1", "ExpectedDestination1", "1234")
                 .withRow("sourceURI")
                 .get();
 
-        List<RedirectSpecification> parsedSpecs = new RedirectSpecExcelParser(filename).parse();
+        new RedirectSpecExcelParser(filename, handler).parse();
 
-        assertThat(parsedSpecs, hasSize(1));
+        assertThat(validSpec, hasSize(1));
+        assertThat(invalidSpec, hasSize(1));
     }
 
     @Test
@@ -59,61 +83,80 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI1", "ExpectedDestination1")
                 .get();
 
-        List<RedirectSpecification> parsedSpecs = new RedirectSpecExcelParser(filename).parse();
+        new RedirectSpecExcelParser(filename, handler).parse();
 
-        assertThat(parsedSpecs, hasSize(1));
-        assertThat(parsedSpecs.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(parsedSpecs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
-        assertThat(parsedSpecs.get(0).getExpectedStatusCode(), is(200));
+        assertThat(validSpec, hasSize(1));
+        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        assertThat(validSpec.get(0).getExpectedStatusCode(), is(200));
 
     }
 
     @Test
     public void shouldBeAbleToParseXls() throws Exception {
 
-        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(getExcelTestFile("2_rows_2_column.xls"));
-        List<RedirectSpecification> parse = sut.parse();
 
-        assertThat(parse, hasSize(2));
-        assertThat(parse.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(parse.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        String filename = givenAnExcelFile()
+                .withRow("SourceURI1", "ExpectedDestination1")
+                .withRow("SourceURI2", "ExpectedDestination2")
+                .get();
 
-        assertThat(parse.get(1).getSourceURI(), is("SourceURI2"));
-        assertThat(parse.get(1).getExpectedDestination(), is("ExpectedDestination2"));
+        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(filename, handler);
+        sut.parse();
+
+        assertThat(validSpec, hasSize(2));
+        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+
+        assertThat(validSpec.get(1).getSourceURI(), is("SourceURI2"));
+        assertThat(validSpec.get(1).getExpectedDestination(), is("ExpectedDestination2"));
     }
 
     @Test
     public void shouldBeAbleToParseXlsx() throws Exception {
 
-        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(getExcelTestFile("2_rows_2_column.xlsx"));
-        List<RedirectSpecification> parse = sut.parse();
 
-        assertThat(parse, hasSize(2));
-        assertThat(parse.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(parse.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        String filename = givenAnExcelXFile()
+                .withRow("SourceURI1", "ExpectedDestination1")
+                .withRow("SourceURI2", "ExpectedDestination2")
+                .get();
 
-        assertThat(parse.get(1).getSourceURI(), is("SourceURI2"));
-        assertThat(parse.get(1).getExpectedDestination(), is("ExpectedDestination2"));
+        new RedirectSpecExcelParser(filename, handler).parse();
+
+        assertThat(validSpec, hasSize(2));
+        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+
+        assertThat(validSpec.get(1).getSourceURI(), is("SourceURI2"));
+        assertThat(validSpec.get(1).getExpectedDestination(), is("ExpectedDestination2"));
     }
 
-
-    private String getExcelTestFile(String name) {
-        return RedirectSpecification.class.getResource("/excel/" + name).getFile();
+    private ExcelTestFileBuilder givenAnExcelXFile() {
+        return new ExcelTestFileBuilder(true);
     }
 
     private ExcelTestFileBuilder givenAnExcelFile() {
-        return new ExcelTestFileBuilder();
+        return new ExcelTestFileBuilder(false);
     }
-
 
     class ExcelTestFileBuilder {
 
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("Test sheet");
+        private final Workbook workbook;
+        private final Sheet sheet;
         private int curRowNumber = 0;
 
-        public ExcelTestFileBuilder withRow(String... values) {
-            HSSFRow row = sheet.createRow(curRowNumber++);
+        ExcelTestFileBuilder(boolean xslsx) {
+            if (xslsx) {
+                this.workbook = new XSSFWorkbook();
+            } else {
+                this.workbook = new HSSFWorkbook();
+            }
+
+            this.sheet = workbook.createSheet("Test sheet");
+        }
+
+        ExcelTestFileBuilder withRow(String... values) {
+            Row row = sheet.createRow(curRowNumber++);
             int cellNumber = 0;
             for (String value : values) {
                 row.createCell(cellNumber++).setCellValue(value);
@@ -121,7 +164,7 @@ public class RedirectSpecExcelParserTest {
             return this;
         }
 
-        public String get() throws IOException {
+        String get() throws IOException {
             File file = temporaryFolder.newFile();
             FileOutputStream out = new FileOutputStream(file);
             workbook.write(out);

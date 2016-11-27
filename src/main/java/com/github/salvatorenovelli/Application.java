@@ -2,10 +2,8 @@ package com.github.salvatorenovelli;
 
 import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
-import com.github.salvatorenovelli.io.RedirectCheckResponseCsvSerializer;
-import com.github.salvatorenovelli.io.RedirectSpecCSVParser;
-import com.github.salvatorenovelli.io.RedirectSpecExcelParser;
-import com.github.salvatorenovelli.io.RedirectSpecificationParser;
+import com.github.salvatorenovelli.io.*;
+import com.github.salvatorenovelli.model.InvalidRedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
@@ -23,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class Application {
+public class Application implements ParsedSpecificationHandler{
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final int NUM_WORKERS = 50;
@@ -44,7 +42,7 @@ public class Application {
             if (sourceFilename.endsWith(".csv")) {
                 this.parser = new RedirectSpecCSVParser(Paths.get(sourceFilename));
             } else {
-                this.parser = new RedirectSpecExcelParser(sourceFilename);
+                this.parser = new RedirectSpecExcelParser(sourceFilename, this);
             }
 
             this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
@@ -109,20 +107,35 @@ public class Application {
     }
 
     private List<RedirectCheckResponse> analyseRedirects() throws IOException, ExecutionException, InterruptedException {
-        try {
-            List<RedirectSpecification> specs = parser.parse();
+//        try {
+//            parser.parse();
+//
+//            progressBar = new TextProgressBar(specs.size());
+//            progressBar.startPrinting();
+//
+//            ParallelRedirectSpecAnalyser analyser = new ParallelRedirectSpecAnalyser(
+//                    redirectChainAnalyser, new RedirectCheckResponseFactory(), NUM_WORKERS);
+//
+//            analyser.setProgressMonitor(progressBar);
+//
+//            return analyser.runParallelAnalysis(specs);
+//        } finally {
+//            progressBar.stopPrinting();
+//        }
 
-            progressBar = new TextProgressBar(specs.size());
-            progressBar.startPrinting();
 
-            ParallelRedirectSpecAnalyser analyser = new ParallelRedirectSpecAnalyser(
-                    redirectChainAnalyser, new RedirectCheckResponseFactory(), NUM_WORKERS);
-
-            analyser.setProgressMonitor(progressBar);
-
-            return analyser.runParallelAnalysis(specs);
-        } finally {
-            progressBar.stopPrinting();
-        }
+        return null;
     }
+
+    @Override
+    public void handleValidSpec(RedirectSpecification spec) {
+
+    }
+
+    @Override
+    public void handleInvalidSpec(InvalidRedirectSpecification spec) {
+
+    }
+
+
 }

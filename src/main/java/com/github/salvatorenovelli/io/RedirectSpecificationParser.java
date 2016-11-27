@@ -6,5 +6,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface RedirectSpecificationParser {
-    List<RedirectSpecification> parse() throws IOException;
+    void parse(ParsedSpecificationHandler handler) throws IOException;
 }
