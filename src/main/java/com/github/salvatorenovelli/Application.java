@@ -120,10 +120,11 @@ public class Application implements ParsedSpecificationHandler {
 
             parser.parse();
 
-            ParallelRedirectSpecAnalyser analyser = new ParallelRedirectSpecAnalyser(
-                    redirectChainAnalyser, new RedirectCheckResponseFactory(), NUM_WORKERS);
-
-            analyser.setProgressMonitor(progressBar);
+            ParallelRedirectSpecAnalyser analyser =
+                    new ParallelRedirectSpecAnalyser(
+                            redirectChainAnalyser,
+                            new RedirectCheckResponseFactory(),
+                            NUM_WORKERS);
 
             return analyser.runParallelAnalysis(validSpec);
         } finally {
@@ -134,6 +135,7 @@ public class Application implements ParsedSpecificationHandler {
     @Override
     public void handleValidSpec(RedirectSpecification spec) {
         validSpec.add(validSpec.size(), spec);
+        progressBar.tick();
     }
 
     @Override

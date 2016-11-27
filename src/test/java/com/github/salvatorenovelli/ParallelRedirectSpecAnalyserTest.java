@@ -66,16 +66,6 @@ public class ParallelRedirectSpecAnalyserTest {
         }
     }
 
-    @Test
-    public void completedRedirectCheckShouldTriggerProgress() throws Exception {
-        ProgressMonitor progressMonitor = Mockito.mock(ProgressMonitor.class);
-        sut.setProgressMonitor(progressMonitor);
-
-        sut.runParallelAnalysis(createTestSpecWithSize(10));
-
-        verify(progressMonitor, times(10)).tick();
-    }
-
     @Test(timeout = 5000)
     public void multipleSpecsShouldBeAnalysedInParallel() throws Exception {
         int GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS = Runtime.getRuntime().availableProcessors() + 5;
