@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -130,6 +131,44 @@ public class RedirectSpecExcelParserTest {
         assertThat(validSpec.get(1).getSourceURI(), is("SourceURI2"));
         assertThat(validSpec.get(1).getExpectedDestination(), is("ExpectedDestination2"));
     }
+
+    @Test
+    public void parserReturnMeaningfulErrorWhenSourceUriIsMissing() throws Exception {
+        String filename = givenAnExcelXFile()
+                .withRow("", "ExpectedDestination1")
+                .get();
+
+        new RedirectSpecExcelParser(filename, handler).parse();
+
+        assertThat(invalidSpec, hasSize(1));
+        assertThat(invalidSpec.get(0).getErrorMessage(), containsString("'Source URI' parameter is invalid or missing"));
+
+    }
+
+    @Test
+    public void parserReturnMeaningfulErrorWhenExpectedUriIsNull() throws Exception {
+        String filename = givenAnExcelXFile()
+                .withRow("SourceUri")
+                .get();
+
+        new RedirectSpecExcelParser(filename, handler).parse();
+
+        assertThat(invalidSpec, hasSize(1));
+        assertThat(invalidSpec.get(0).getErrorMessage(), containsString("'Expected Destination' parameter is invalid or missing"));
+    }
+
+    @Test
+    public void parserReturnMeaningfulErrorWhenExpectedUriIsEmpty() throws Exception {
+        String filename = givenAnExcelXFile()
+                .withRow("SourceUri","")
+                .get();
+
+        new RedirectSpecExcelParser(filename, handler).parse();
+
+        assertThat(invalidSpec, hasSize(1));
+        assertThat(invalidSpec.get(0).getErrorMessage(), containsString("'Expected Destination' parameter is invalid or missing"));
+    }
+
 
     @Test
     public void shouldReturnTheNumberOfRows() throws Exception {
