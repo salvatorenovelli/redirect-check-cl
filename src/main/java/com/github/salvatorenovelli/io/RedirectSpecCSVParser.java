@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class RedirectSpecCSVParser implements RedirectSpecificationParser {
+public class RedirectSpecCSVParser  {
 
 
     private static final String[] CHARSETS = new String[]{"ISO-8859-1", "UTF-8", "US-ASCII", "UTF-16BE", "UTF-16LE", "UTF-16"};
@@ -30,22 +30,22 @@ public class RedirectSpecCSVParser implements RedirectSpecificationParser {
 
 
     public List<RedirectSpecification> parse() throws IOException {
-        try {
-            for (String charset : CHARSETS) {
-                try {
-                    logger.debug("Attempting decoding using charset: " + charset);
-                    return Files.lines(inputCsvFile, Charset.forName(charset))
-                            .map(s -> s.split(","))
-                            .map(toRedirectSpecification())
-                            .filter(isValid())
-                            .collect(Collectors.toList());
-                } catch (MalformedInputException e) {
-                    logger.debug("Unable to decode using charset:" + charset);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Unable to complete analysis because: " + e.getMessage(), e);
-        }
+//        try {
+//            for (String charset : CHARSETS) {
+//                try {
+//                    logger.debug("Attempting decoding using charset: " + charset);
+//                    return Files.lines(inputCsvFile, Charset.forName(charset))
+//                            .map(s -> s.split(","))
+//                            .map(toRedirectSpecification())
+//                            .filter(isValid())
+//                            .collect(Collectors.toList());
+//                } catch (MalformedInputException e) {
+//                    logger.debug("Unable to decode using charset:" + charset);
+//                }
+//            }
+//        } catch (Exception e) {
+//            logger.error("Unable to complete analysis because: " + e.getMessage(), e);
+//        }
 
         return Collections.emptyList();
     }
@@ -70,8 +70,6 @@ public class RedirectSpecCSVParser implements RedirectSpecificationParser {
         return redirectSpecification -> redirectSpecification != INVALID_URI_SPEC;
     }
 
-    @Override
-    public void parse(ParsedSpecificationHandler handler) throws IOException {
 
-    }
+
 }

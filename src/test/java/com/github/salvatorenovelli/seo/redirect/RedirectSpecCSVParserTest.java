@@ -19,43 +19,43 @@ import static org.hamcrest.core.IsNull.notNullValue;
 public class RedirectSpecCSVParserTest {
 
 
-
-    @Test
-    public void testCSVParsing() throws URISyntaxException, IOException {
-
-        URL csvFile = RedirectSpecification.class.getResource("/redirectspec-simple.csv");
-
-        RedirectSpecCSVParser sut = new RedirectSpecCSVParser(Paths.get(csvFile.toURI()));
-
-        List<RedirectSpecification> specificationList = sut.parse();
-
-        assertThat(specificationList, notNullValue());
-        assertThat(specificationList.size(), is(3));
-
-
-        int i = 1;
-        for (RedirectSpecification curEntry : specificationList) {
-            assertThat(curEntry.getSourceURI(), equalTo("http://sourceURI" + i + ".com"));
-            assertThat(curEntry.getExpectedDestination(), equalTo("http://expectedURI" + i + ".com"));
-            i++;
-        }
-
-
-    }
-
-    @Test
-    public void testCSVParsingWithURIError() throws URISyntaxException, IOException {
-
-        URL csvFile = RedirectSpecification.class.getResource("/redirectspec-urierror.csv");
-        RedirectSpecCSVParser sut = new RedirectSpecCSVParser(Paths.get(csvFile.toURI()));
-
-        List<RedirectSpecification> specificationList = sut.parse();
-
-        assertThat(specificationList, notNullValue());
-        assertThat(specificationList.size(), is(3));
-
-
-    }
+//
+//    @Test
+//    public void testCSVParsing() throws URISyntaxException, IOException {
+//
+//        URL csvFile = RedirectSpecification.class.getResource("/redirectspec-simple.csv");
+//
+//        RedirectSpecCSVParser sut = new RedirectSpecCSVParser(Paths.get(csvFile.toURI()));
+//
+//        List<RedirectSpecification> specificationList = sut.parse();
+//
+//        assertThat(specificationList, notNullValue());
+//        assertThat(specificationList.size(), is(3));
+//
+//
+//        int i = 1;
+//        for (RedirectSpecification curEntry : specificationList) {
+//            assertThat(curEntry.getSourceURI(), equalTo("http://sourceURI" + i + ".com"));
+//            assertThat(curEntry.getExpectedDestination(), equalTo("http://expectedURI" + i + ".com"));
+//            i++;
+//        }
+//
+//
+//    }
+//
+//    @Test
+//    public void testCSVParsingWithURIError() throws URISyntaxException, IOException {
+//
+//        URL csvFile = RedirectSpecification.class.getResource("/redirectspec-urierror.csv");
+//        RedirectSpecCSVParser sut = new RedirectSpecCSVParser(Paths.get(csvFile.toURI()));
+//
+//        List<RedirectSpecification> specificationList = sut.parse();
+//
+//        assertThat(specificationList, notNullValue());
+//        assertThat(specificationList.size(), is(3));
+//
+//
+//    }
 
 
 }

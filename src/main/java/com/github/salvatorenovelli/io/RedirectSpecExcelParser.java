@@ -17,15 +17,21 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
     private static final Logger logger = LoggerFactory.getLogger(RedirectSpecExcelParser.class);
     private final ParsedSpecificationHandler handler;
     private final Workbook wb;
+    private final Sheet sheet;
 
     public RedirectSpecExcelParser(String filename, ParsedSpecificationHandler handler) throws IOException, InvalidFormatException {
-        wb = WorkbookFactory.create(new FileInputStream(filename));
+        this.wb = WorkbookFactory.create(new FileInputStream(filename));
+        this.sheet = wb.getSheetAt(0);
         this.handler = handler;
+    }
+
+    @Override
+    public int getNumSpecs(){
+        return sheet.getPhysicalNumberOfRows();
     }
 
 
     public void parse() throws IOException {
-        Sheet sheet = wb.getSheetAt(0);
         StreamSupport.stream(sheet.spliterator(), false)
                 .forEach(this::toRedirectSpecification);
     }
@@ -37,8 +43,8 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
             int expectedStatusCode = getExpectedStatusCode(row);
             handler.handleValidSpec(new RedirectSpecification(col1, col2, expectedStatusCode));
         } catch (Exception e) {
-            logger.error("Unable to parse specification in row {} because:  {}", row.getRowNum(), e.toString());
-            handler.handleInvalidSpec(new InvalidRedirectSpecification(row.getRowNum(),e.toString()));
+            logger.warn("Unable to parse specification in row {} because:  {}", row.getRowNum(), e.toString());
+            handler.handleInvalidSpec(new InvalidRedirectSpecification(row.getRowNum(), e.toString()));
         }
     }
 
@@ -55,8 +61,5 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
         return redirectSpecification != null;
     }
 
-    @Override
-    public void parse(ParsedSpecificationHandler handler) throws IOException {
 
-    }
 }

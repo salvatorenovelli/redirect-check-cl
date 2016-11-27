@@ -131,6 +131,26 @@ public class RedirectSpecExcelParserTest {
         assertThat(validSpec.get(1).getExpectedDestination(), is("ExpectedDestination2"));
     }
 
+    @Test
+    public void shouldReturnTheNumberOfRows() throws Exception {
+
+        int NUM_ROWS = 10;
+
+        String filename = givenAnExcelFileWithRows(NUM_ROWS);
+
+        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename, handler);
+        assertThat(parser.getNumSpecs(), is(NUM_ROWS));
+
+    }
+
+    private String givenAnExcelFileWithRows(int NUM_ROWS) throws IOException {
+        ExcelTestFileBuilder excelTestFileBuilder = givenAnExcelFile();
+        for (int i = 0; i < NUM_ROWS; i++) {
+            excelTestFileBuilder.withRow("SourceURI" + i, "ExpectedDestination" + i);
+        }
+        return excelTestFileBuilder.get();
+    }
+
     private ExcelTestFileBuilder givenAnExcelXFile() {
         return new ExcelTestFileBuilder(true);
     }
