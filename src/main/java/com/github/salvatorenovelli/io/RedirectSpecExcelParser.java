@@ -36,7 +36,8 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
         final Optional<Sheet> first = StreamSupport.stream(wb.spliterator(), NON_PARALLEL)
                 .filter(sheet -> !(wb.isSheetHidden(wb.getSheetIndex(sheet)) || wb.isSheetVeryHidden(wb.getSheetIndex(sheet))))
                 .findFirst();
-        return first.orElseThrow(() -> new RuntimeException("The workbook is empty!"));
+        //A workbook without a visible sheet is impossible to create with Microsoft Excel or via APIs (but I'll leave the check there just in case I'm missing something)
+        return first.orElseThrow(() -> new RuntimeException("The workbook looks empty!"));
     }
 
     @Override
