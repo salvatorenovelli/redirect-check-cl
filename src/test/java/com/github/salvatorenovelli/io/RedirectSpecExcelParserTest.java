@@ -2,6 +2,7 @@ package com.github.salvatorenovelli.io;
 
 import com.github.salvatorenovelli.model.InvalidRedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectSpecification;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -160,7 +161,7 @@ public class RedirectSpecExcelParserTest {
     @Test
     public void parserReturnMeaningfulErrorWhenExpectedUriIsEmpty() throws Exception {
         String filename = givenAnExcelXFile()
-                .withRow("SourceUri","")
+                .withRow("SourceUri", "")
                 .get();
 
         new RedirectSpecExcelParser(filename, handler).parse();
@@ -180,6 +181,18 @@ public class RedirectSpecExcelParserTest {
         RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename, handler);
         assertThat(parser.getNumSpecs(), is(NUM_ROWS));
 
+    }
+
+
+    @Test
+    public void hiddenSheetsShouldNotBeConsidered() throws Exception {
+        final String filename = givenAnExcelFile()
+                .withAnHiddenSheetAsFirstSheet()
+                .withRow("SourceURI1", "ExpectedDestination1")
+                .get();
+
+        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename, handler);
+        assertThat(parser.getNumSpecs(), is(1));
     }
 
     private String givenAnExcelFileWithRows(int NUM_ROWS) throws IOException {
@@ -212,6 +225,14 @@ public class RedirectSpecExcelParserTest {
             }
 
             this.sheet = workbook.createSheet("Test sheet");
+        }
+
+        ExcelTestFileBuilder withAnHiddenSheetAsFirstSheet() {
+            String hiddenSheetName = "HiddenSheet";
+            Sheet hiddenSheet = workbook.createSheet(hiddenSheetName);
+            workbook.setSheetOrder(hiddenSheetName, 0);
+            workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet), true);
+            return this;
         }
 
         ExcelTestFileBuilder withRow(String... values) {
