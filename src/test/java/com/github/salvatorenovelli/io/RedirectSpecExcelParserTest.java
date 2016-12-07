@@ -195,6 +195,17 @@ public class RedirectSpecExcelParserTest {
         assertThat(parser.getNumSpecs(), is(1));
     }
 
+    @Test
+    public void veryHiddenSheetsShouldNotBeConsidered() throws Exception {
+        final String filename = givenAnExcelFile()
+                .withAVeryHiddenSheetAsFirstSheet()
+                .withRow("SourceURI1", "ExpectedDestination1")
+                .get();
+
+        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename, handler);
+        assertThat(parser.getNumSpecs(), is(1));
+    }
+
     private String givenAnExcelFileWithRows(int NUM_ROWS) throws IOException {
         ExcelTestFileBuilder excelTestFileBuilder = givenAnExcelFile();
         for (int i = 0; i < NUM_ROWS; i++) {
@@ -231,7 +242,15 @@ public class RedirectSpecExcelParserTest {
             String hiddenSheetName = "HiddenSheet";
             Sheet hiddenSheet = workbook.createSheet(hiddenSheetName);
             workbook.setSheetOrder(hiddenSheetName, 0);
-            workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet), true);
+            workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet),  Workbook.SHEET_STATE_HIDDEN);
+            return this;
+        }
+
+        public ExcelTestFileBuilder withAVeryHiddenSheetAsFirstSheet() {
+            String hiddenSheetName = "VeryHiddenSheet";
+            Sheet hiddenSheet = workbook.createSheet(hiddenSheetName);
+            workbook.setSheetOrder(hiddenSheetName, 0);
+            workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet), Workbook.SHEET_STATE_VERY_HIDDEN);
             return this;
         }
 
