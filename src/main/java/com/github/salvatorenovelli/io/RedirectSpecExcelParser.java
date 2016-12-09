@@ -56,7 +56,7 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
             String col1 = extractSourceURI(row);
             String col2 = extractExpectedDestination(row);
             int expectedStatusCode = extractExpectedStatusCode(row);
-            handler.handleValidSpec(new RedirectSpecification(col1, col2, expectedStatusCode));
+            handler.handleValidSpec(new RedirectSpecification(row.getRowNum() + 1, col1, col2, expectedStatusCode));
         } catch (Exception e) {
             logger.warn("Unable to parse specification in row {} because:  {}", row.getRowNum(), e.toString());
             handler.handleInvalidSpec(new InvalidRedirectSpecification(row.getRowNum(), e.getMessage()));

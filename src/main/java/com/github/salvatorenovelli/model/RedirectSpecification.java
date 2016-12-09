@@ -5,13 +5,10 @@ public final class RedirectSpecification {
     private final String sourceURI;
     private final String expectedDestination;
     private final int expectedStatusCode;
+    private final int lineNumber;
 
-
-    public RedirectSpecification(String sourceURI, String expectedDestination) {
-        this(sourceURI,expectedDestination,200);
-    }
-
-    public RedirectSpecification(String sourceURI, String expectedDestination, int expectedStatusCode) {
+    public RedirectSpecification(int lineNumber, String sourceURI, String expectedDestination, int expectedStatusCode) {
+        this.lineNumber = lineNumber;
         this.sourceURI = sourceURI;
         this.expectedDestination = expectedDestination;
         this.expectedStatusCode = expectedStatusCode;
@@ -36,5 +33,9 @@ public final class RedirectSpecification {
                 ", expectedDestination='" + expectedDestination + '\'' +
                 ", expectedStatusCode=" + expectedStatusCode +
                 '}';
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
     }
 }

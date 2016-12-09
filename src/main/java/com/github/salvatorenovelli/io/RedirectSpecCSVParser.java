@@ -1,21 +1,18 @@
 package com.github.salvatorenovelli.io;
 
 import com.github.salvatorenovelli.model.RedirectSpecification;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.MalformedInputException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-public class RedirectSpecCSVParser  {
+public class RedirectSpecCSVParser {
 
 
     private static final String[] CHARSETS = new String[]{"ISO-8859-1", "UTF-8", "US-ASCII", "UTF-16BE", "UTF-16LE", "UTF-16"};
@@ -56,7 +53,7 @@ public class RedirectSpecCSVParser  {
         return strings -> {
             currentLine++;
             if (strings.length > 1) {
-                return new RedirectSpecification(strings[0], strings[1], 200);
+                return new RedirectSpecification(currentLine, strings[0], strings[1], 200);
             } else {
                 if (strings.length > 0) {
                     logger.warn("Missing expected url in line: {} ", currentLine);
@@ -69,7 +66,6 @@ public class RedirectSpecCSVParser  {
     private Predicate<RedirectSpecification> isValid() {
         return redirectSpecification -> redirectSpecification != INVALID_URI_SPEC;
     }
-
 
 
 }

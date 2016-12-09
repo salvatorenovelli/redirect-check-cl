@@ -48,6 +48,22 @@ public class RedirectSpecExcelParserTest {
         }
     };
 
+    @Test
+    public void lineNumberShouldBeSetCorrectly() throws Exception {
+        String filename = givenAnExcelFile()
+                .withRow("SourceURI1", "ExpectedDestination1")
+                .withRow("SourceURI2", "ExpectedDestination2")
+                .get();
+
+        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(filename, handler);
+        sut.parse();
+
+        assertThat(validSpec, hasSize(2));
+        assertThat(validSpec.get(0).getLineNumber(), is(1));
+        assertThat(validSpec.get(1).getLineNumber(), is(2));
+
+    }
+
 
     @Test
     public void shouldAcceptOptionalExpectedStatusCode() throws Exception {
