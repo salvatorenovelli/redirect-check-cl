@@ -2,6 +2,7 @@ package com.github.salvatorenovelli.model;
 
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChainElement;
+
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class RedirectCheckResponse {
     private final String statusMessage;
     private final String sourceURI;
     private final String expectedDestinationURI;
+    private final int requestLineNumber;
     private String actualDestinationURI;
     private int lastHttpStatus = -1;
 
@@ -22,7 +24,7 @@ public class RedirectCheckResponse {
 
     public RedirectCheckResponse(RedirectSpecification request, RedirectChain redirectChain) {
 
-
+        this.requestLineNumber = request.getLineNumber();
         this.sourceURI = request.getSourceURI();
         this.redirectChain = redirectChain.getElements();
         this.expectedDestinationURI = request.getExpectedDestination();
@@ -98,6 +100,10 @@ public class RedirectCheckResponse {
 
     public String getSourceURI() {
         return sourceURI;
+    }
+
+    public int getRequestLineNumber() {
+        return requestLineNumber;
     }
 
     public enum Status {
