@@ -2,11 +2,13 @@ package com.github.salvatorenovelli.seo.redirect;
 
 
 import com.github.salvatorenovelli.cli.ProgressMonitor;
+import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,7 @@ public class ParallelRedirectSpecAnalyser {
     private final RedirectChainAnalyser analyser;
     private final int numWorkers;
     private RedirectCheckResponseFactory redirectCheckResponseFactory;
+    private ProgressMonitor progressMonitor = () -> {};
 
     public ParallelRedirectSpecAnalyser(RedirectChainAnalyser redirectChainAnalyser, RedirectCheckResponseFactory redirectCheckResponseFactory, int numWorkers) {
         this.analyser = redirectChainAnalyser;
@@ -46,10 +49,14 @@ public class ParallelRedirectSpecAnalyser {
 
 
     private RedirectCheckResponse checkRedirect(RedirectSpecification spec) {
-            logger.debug("Analysing " + spec);
-            RedirectChain redirectChain = analyser.analyseRedirectChain(spec.getSourceURI());
-            return redirectCheckResponseFactory.createResponse(spec, redirectChain);
+        logger.debug("Analysing " + spec);
+        RedirectChain redirectChain = analyser.analyseRedirectChain(spec.getSourceURI());
+        progressMonitor.tick();
+        return redirectCheckResponseFactory.createResponse(spec, redirectChain);
     }
 
+    public void setProgressMonitor(TextProgressBar progressMonitor) {
+        this.progressMonitor = progressMonitor;
+    }
 }
 

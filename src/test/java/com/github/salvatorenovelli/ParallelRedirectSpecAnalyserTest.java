@@ -1,12 +1,12 @@
 package com.github.salvatorenovelli;
 
-import com.github.salvatorenovelli.cli.ProgressMonitor;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ParallelRedirectSpecAnalyserTest {
@@ -95,7 +96,7 @@ public class ParallelRedirectSpecAnalyserTest {
         List<RedirectSpecification> spec = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
-            RedirectSpecification curSpec = new RedirectSpecification("http://www.example.com/" + i, "http://www.example.com/" + i + "/dst", 200);
+            RedirectSpecification curSpec = new RedirectSpecification(0, "http://www.example.com/" + i, "http://www.example.com/" + i + "/dst", 200);
 
             RedirectChain curResponse = new RedirectChain();
             RedirectCheckResponse curChainResponse = Mockito.mock(RedirectCheckResponse.class);
