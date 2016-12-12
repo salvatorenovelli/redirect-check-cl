@@ -13,6 +13,7 @@ import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,8 @@ public class Application implements ParsedSpecificationHandler {
 
             this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
             this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
+
+            initializeProgressBar();
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to create output file: " + outFileName + ". File may be busy or write protected.");
         } catch (InvalidFormatException e) {
@@ -108,23 +111,29 @@ public class Application implements ParsedSpecificationHandler {
     }
 
     private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
-        List<RedirectCheckResponse> responses = analyseRedirects();
-        csvWriter.writeall(responses);
+        parser.parse();
+
+        csvWriter.addInvalidSpecs(invalidSpec);
+        List<RedirectCheckResponse> responses = analyseRedirects(validSpec);
+        csvWriter.addResponses(responses);
+        csvWriter.write();
     }
 
-    private List<RedirectCheckResponse> analyseRedirects() throws IOException, ExecutionException, InterruptedException {
+    private void initializeProgressBar() {
+        progressBar = new TextProgressBar(parser.getNumSpecs());
+        progressBar.startPrinting();
+    }
+
+    private List<RedirectCheckResponse> analyseRedirects(List<RedirectSpecification> validSpec) throws IOException, ExecutionException, InterruptedException {
         try {
-
-            progressBar = new TextProgressBar(parser.getNumSpecs());
-            progressBar.startPrinting();
-
-            parser.parse();
 
             ParallelRedirectSpecAnalyser analyser =
                     new ParallelRedirectSpecAnalyser(
                             redirectChainAnalyser,
                             new RedirectCheckResponseFactory(),
                             NUM_WORKERS);
+
+            analyser.setProgressMonitor(progressBar);
 
             return analyser.runParallelAnalysis(validSpec);
         } finally {
@@ -135,7 +144,6 @@ public class Application implements ParsedSpecificationHandler {
     @Override
     public void handleValidSpec(RedirectSpecification spec) {
         validSpec.add(validSpec.size(), spec);
-        progressBar.tick();
     }
 
     @Override
