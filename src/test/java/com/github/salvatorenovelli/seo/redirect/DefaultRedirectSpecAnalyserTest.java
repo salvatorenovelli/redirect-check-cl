@@ -35,7 +35,7 @@ public class DefaultRedirectSpecAnalyserTest {
 
     @Mock private RedirectChainAnalyser redirectSpecAnalyser;
     @Mock private ProgressMonitor progressMonitor;
-    @Spy private RedirectCheckResponseFactory redirectCheckResponseFactory = new RedirectCheckResponseFactory();
+    private RedirectCheckResponseFactory redirectCheckResponseFactory = new RedirectCheckResponseFactory();
     private RedirectCheckResponse expectedResponse;
 
     @Before
@@ -85,7 +85,6 @@ public class DefaultRedirectSpecAnalyserTest {
         RedirectCheckResponse curChainResponse = RedirectCheckResponse.createResponse(curSpec, redirectChain);
 
         when(redirectSpecAnalyser.analyseRedirectChain("http://www.example.com/" + i)).thenReturn(redirectChain);
-        when(redirectCheckResponseFactory.createResponse(curSpec, redirectChain)).thenReturn(curChainResponse);
         expectedResponse = curChainResponse;
         return curSpec;
     }

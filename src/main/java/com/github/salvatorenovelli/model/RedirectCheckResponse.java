@@ -8,6 +8,9 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class RedirectCheckResponse {
 
 
