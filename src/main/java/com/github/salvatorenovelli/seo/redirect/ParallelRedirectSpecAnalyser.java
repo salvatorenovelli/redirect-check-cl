@@ -24,13 +24,14 @@ public class ParallelRedirectSpecAnalyser {
     private static final Logger logger = LoggerFactory.getLogger(ParallelRedirectSpecAnalyser.class);
     private final RedirectChainAnalyser analyser;
     private final int numWorkers;
+    private final ProgressMonitor progressMonitor;
     private RedirectCheckResponseFactory redirectCheckResponseFactory;
-    private ProgressMonitor progressMonitor = () -> {};
 
-    public ParallelRedirectSpecAnalyser(RedirectChainAnalyser redirectChainAnalyser, RedirectCheckResponseFactory redirectCheckResponseFactory, int numWorkers) {
+    public ParallelRedirectSpecAnalyser(RedirectChainAnalyser redirectChainAnalyser, RedirectCheckResponseFactory redirectCheckResponseFactory, int numWorkers, ProgressMonitor progressMonitor) {
         this.analyser = redirectChainAnalyser;
         this.redirectCheckResponseFactory = redirectCheckResponseFactory;
         this.numWorkers = numWorkers;
+        this.progressMonitor = progressMonitor;
     }
 
     public List<RedirectCheckResponse> runParallelAnalysis(List<RedirectSpecification> redirectCheckSpecs) throws ExecutionException, InterruptedException {
@@ -53,10 +54,6 @@ public class ParallelRedirectSpecAnalyser {
         RedirectChain redirectChain = analyser.analyseRedirectChain(spec.getSourceURI());
         progressMonitor.tick();
         return redirectCheckResponseFactory.createResponse(spec, redirectChain);
-    }
-
-    public void setProgressMonitor(TextProgressBar progressMonitor) {
-        this.progressMonitor = progressMonitor;
     }
 }
 

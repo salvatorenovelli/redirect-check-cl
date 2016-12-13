@@ -131,9 +131,8 @@ public class Application implements ParsedSpecificationHandler {
                     new ParallelRedirectSpecAnalyser(
                             redirectChainAnalyser,
                             new RedirectCheckResponseFactory(),
-                            NUM_WORKERS);
+                            NUM_WORKERS, progressBar);
 
-            analyser.setProgressMonitor(progressBar);
 
             return analyser.runParallelAnalysis(validSpec);
         } finally {
