@@ -35,7 +35,7 @@ public class DefaultRedirectSpecAnalyserTest {
 
     @Mock private RedirectChainAnalyser redirectSpecAnalyser;
     @Mock private ProgressMonitor progressMonitor;
-    private RedirectCheckResponseFactory redirectCheckResponseFactory = new RedirectCheckResponseFactory();
+    @Spy private RedirectCheckResponseFactory redirectCheckResponseFactory = new RedirectCheckResponseFactory();
     private RedirectCheckResponse expectedResponse;
 
     @Before
