@@ -6,6 +6,10 @@ import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 
 public class RedirectCheckResponseFactory {
     public RedirectCheckResponse createResponse(RedirectSpecification spec, RedirectChain redirectChain) {
-        return new RedirectCheckResponse(spec, redirectChain);
+        return RedirectCheckResponse.createResponse(spec, redirectChain);
+    }
+
+    public RedirectCheckResponse createResponseForInvalidSpec(RedirectSpecification spec) {
+        return RedirectCheckResponse.createResponseForInvalidSpec(spec);
     }
 }

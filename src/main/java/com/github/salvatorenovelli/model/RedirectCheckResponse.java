@@ -4,6 +4,7 @@ import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChainElement;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
@@ -22,13 +23,23 @@ public class RedirectCheckResponse {
 
     private int numberOfRedirects;
 
-    public RedirectCheckResponse(RedirectSpecification request, RedirectChain redirectChain) {
 
+    private RedirectCheckResponse(RedirectSpecification invalidRequest) {
+        Assert.isTrue(!invalidRequest.isValid(), "This constructor should be used only for invalid spec requests.");
+        status = Status.FAILURE;
+        statusMessage = invalidRequest.getErrorMessage();
+        requestLineNumber = invalidRequest.getLineNumber();
+        sourceURI = "n/a";
+        expectedDestinationURI = "n/a";
+    }
+
+    private RedirectCheckResponse(RedirectSpecification request, RedirectChain redirectChain) {
+
+        Assert.isTrue(request.isValid(), "This constructor should be used only for valid spec requests.");
         this.requestLineNumber = request.getLineNumber();
         this.sourceURI = request.getSourceURI();
         this.redirectChain = redirectChain.getElements();
         this.expectedDestinationURI = request.getExpectedDestination();
-
 
         if (redirectChain.isFailed()) {
             status = Status.FAILURE;
@@ -36,11 +47,9 @@ public class RedirectCheckResponse {
             return;
         }
 
-
         this.actualDestinationURI = redirectChain.getDestinationURI();
         this.lastHttpStatus = redirectChain.getLastHttpStatus();
         this.numberOfRedirects = redirectChain.getNumOfRedirect();
-
 
         if (!request.getExpectedDestination().equals(actualDestinationURI)) {
             status = Status.FAILURE;
@@ -54,13 +63,17 @@ public class RedirectCheckResponse {
             return;
         }
 
-
         status = Status.SUCCESS;
         statusMessage = "";
-
-
     }
 
+    public static RedirectCheckResponse createResponse(RedirectSpecification request, RedirectChain redirectChain) {
+        return new RedirectCheckResponse(request, redirectChain);
+    }
+
+    public static RedirectCheckResponse createResponseForInvalidSpec(RedirectSpecification request) {
+        return new RedirectCheckResponse(request);
+    }
 
     public String getActualDestinationURI() {
         return actualDestinationURI;

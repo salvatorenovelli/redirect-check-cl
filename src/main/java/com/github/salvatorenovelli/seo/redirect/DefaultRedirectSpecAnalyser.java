@@ -27,9 +27,18 @@ public class DefaultRedirectSpecAnalyser implements RedirectSpecAnalyser {
 
     @Override
     public RedirectCheckResponse checkRedirect(RedirectSpecification spec) {
-        logger.debug("Analysing " + spec);
-        RedirectChain redirectChain = analyser.analyseRedirectChain(spec.getSourceURI());
-        progressMonitor.tick();
-        return redirectCheckResponseFactory.createResponse(spec, redirectChain);
+
+        try {
+            logger.debug("Analysing " + spec);
+            if (spec.isValid()) {
+                RedirectChain redirectChain = analyser.analyseRedirectChain(spec.getSourceURI());
+                return redirectCheckResponseFactory.createResponse(spec, redirectChain);
+            } else {
+                return redirectCheckResponseFactory.createResponseForInvalidSpec(spec);
+            }
+        } finally {
+            progressMonitor.tick();
+        }
+
     }
 }
