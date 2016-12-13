@@ -14,6 +14,8 @@ import lombok.EqualsAndHashCode;
 public class RedirectCheckResponse {
 
 
+    public static final String DESTINATION_MISMATCH = "Destination doesn't match";
+    public static final String STATUS_CODE_MISMATCH = "HTTP Status is not 200 (OK)";
     private final Status status;
     private final String statusMessage;
     private final String sourceURI;
@@ -56,13 +58,13 @@ public class RedirectCheckResponse {
 
         if (!request.getExpectedDestination().equals(actualDestinationURI)) {
             status = Status.FAILURE;
-            statusMessage = "Destination doesn't match";
+            statusMessage = DESTINATION_MISMATCH;
             return;
         }
 
         if (lastHttpStatus != HttpStatus.OK.value()) {
             status = Status.FAILURE;
-            statusMessage = "HTTP Status is not 200 (OK)";
+            statusMessage = STATUS_CODE_MISMATCH;
             return;
         }
 
