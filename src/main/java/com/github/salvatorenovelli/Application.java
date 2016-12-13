@@ -10,6 +10,7 @@ import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
 import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnalyser;
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
+import com.github.salvatorenovelli.seo.redirect.DefaultRedirectSpecAnalyser;
 import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -21,13 +22,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 
 public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final int NUM_WORKERS = 50;
-    private final RedirectChainAnalyser redirectChainAnalyser;
+    private final RedirectChainAnalyser chainAnalyser;
     private final RedirectCheckResponseCsvSerializer csvWriter;
 
 
@@ -50,9 +52,10 @@ public class Application {
             }
 
             this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
-            this.redirectChainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
-
+            this.chainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
             initializeProgressBar();
+
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to create output file: " + outFileName + ". File may be busy or write protected.");
         } catch (InvalidFormatException e) {
@@ -108,11 +111,14 @@ public class Application {
     }
 
     private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
-
         parser.parse(specs::add);
-        List<RedirectCheckResponse> responses = analyseRedirects(specs);
+        List<RedirectCheckResponse> responses = analyseRedirects(valid(specs));
         csvWriter.addResponses(responses);
         csvWriter.write();
+    }
+
+    private List<RedirectSpecification> valid(List<RedirectSpecification> specs) {
+        return specs.stream().filter((RedirectSpecification::isValid)).collect(Collectors.toList());
     }
 
     private void initializeProgressBar() {
@@ -120,17 +126,15 @@ public class Application {
         progressBar.startPrinting();
     }
 
-    private List<RedirectCheckResponse> analyseRedirects(List<RedirectSpecification> validSpec) throws IOException, ExecutionException, InterruptedException {
+    private List<RedirectCheckResponse> analyseRedirects(List<RedirectSpecification> specs) throws IOException, ExecutionException, InterruptedException {
         try {
 
             ParallelRedirectSpecAnalyser analyser =
-                    new ParallelRedirectSpecAnalyser(
-                            redirectChainAnalyser,
-                            new RedirectCheckResponseFactory(),
-                            NUM_WORKERS, progressBar);
-
-
-            return analyser.runParallelAnalysis(validSpec);
+                    new ParallelRedirectSpecAnalyser(NUM_WORKERS,
+                            new DefaultRedirectSpecAnalyser(chainAnalyser,
+                                    new RedirectCheckResponseFactory(),
+                                    progressBar));
+            return analyser.runParallelAnalysis(specs);
         } finally {
             progressBar.stopPrinting();
         }
