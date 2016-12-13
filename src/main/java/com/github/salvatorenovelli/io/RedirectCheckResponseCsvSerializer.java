@@ -1,6 +1,6 @@
 package com.github.salvatorenovelli.io;
 
-import com.github.salvatorenovelli.model.InvalidRedirectSpecification;
+
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 
 import java.io.File;
@@ -25,10 +25,6 @@ public class RedirectCheckResponseCsvSerializer {
 
     public void addResponses(List<RedirectCheckResponse> responses) throws IOException {
         this.responses.addAll(responses.stream().map(ResponseWrapper::new).collect(Collectors.toList()));
-    }
-
-    public void addInvalidSpecs(List<InvalidRedirectSpecification> invalidSpec) {
-        responses.addAll(invalidSpec.stream().map(ResponseWrapper::new).collect(Collectors.toList()));
     }
 
     public void write() throws IOException {
@@ -78,10 +74,6 @@ public class RedirectCheckResponseCsvSerializer {
                     cr.getExpectedDestinationURI(),
                     cr.getActualDestinationURI() != null ? cr.getActualDestinationURI() : "n/a",
                     cr.getLastHttpStatus() != -1 ? "" + cr.getLastHttpStatus() : "n/a");
-        }
-
-        public ResponseWrapper(InvalidRedirectSpecification cr) {
-            this(cr.getLineNumber(), "n/a", RedirectCheckResponse.Status.FAILURE.name(), cr.getErrorMessage(), "", "", "");
         }
 
         private ResponseWrapper(int lineNumber, String sourceURI, String result, String reason, String expectedURI, String actualURI, String lastHTTPStatus) {

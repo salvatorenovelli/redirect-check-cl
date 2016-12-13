@@ -1,17 +1,31 @@
 package com.github.salvatorenovelli.model;
 
+import org.springframework.util.Assert;
+
 public final class RedirectSpecification {
 
     private final String sourceURI;
     private final String expectedDestination;
     private final int expectedStatusCode;
     private final int lineNumber;
+    private final String errorMessage;
 
-    public RedirectSpecification(int lineNumber, String sourceURI, String expectedDestination, int expectedStatusCode) {
+
+    private RedirectSpecification(int lineNumber, String sourceURI, String expectedDestination, int expectedStatusCode, String errorMessage) {
         this.lineNumber = lineNumber;
         this.sourceURI = sourceURI;
         this.expectedDestination = expectedDestination;
         this.expectedStatusCode = expectedStatusCode;
+        this.errorMessage = errorMessage;
+    }
+
+    public static RedirectSpecification createValid(int lineNumber, String sourceURI, String expectedDestination, int expectedStatusCode) {
+        return new RedirectSpecification(lineNumber, sourceURI, expectedDestination, expectedStatusCode, null);
+    }
+
+    public static RedirectSpecification createInvalid(int lineNumber, String errorMessage) {
+        Assert.hasLength(errorMessage);
+        return new RedirectSpecification(lineNumber, "n/a", "n/a", -1, errorMessage);
     }
 
     public String getSourceURI() {
@@ -26,16 +40,26 @@ public final class RedirectSpecification {
         return expectedStatusCode;
     }
 
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
     @Override
     public String toString() {
         return "RedirectSpecification{" +
                 "sourceURI='" + sourceURI + '\'' +
                 ", expectedDestination='" + expectedDestination + '\'' +
                 ", expectedStatusCode=" + expectedStatusCode +
+                ", lineNumber=" + lineNumber +
+                ", errorMessage='" + errorMessage + '\'' +
                 '}';
     }
 
-    public int getLineNumber() {
-        return lineNumber;
+    public boolean isValid() {
+        return errorMessage == null;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }

@@ -1,5 +1,6 @@
 package com.github.salvatorenovelli;
 
+import com.github.salvatorenovelli.cli.ProgressMonitor;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
@@ -34,12 +35,12 @@ public class ParallelRedirectSpecAnalyserTest {
     ParallelRedirectSpecAnalyser sut;
     @Mock private RedirectChainAnalyser redirectSpecAnalyser;
     @Mock private RedirectCheckResponseFactory redirectCheckResponseFactory;
-    @Mock private RedirectCheckResponse REDIRECT_CHAIN_RESPONSE;
+    @Mock private ProgressMonitor progressMonitor;
     private List<RedirectCheckResponse> expectedResponses = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
-        sut = new ParallelRedirectSpecAnalyser(redirectSpecAnalyser, redirectCheckResponseFactory, NUM_WORKERS);
+        sut = new ParallelRedirectSpecAnalyser(redirectSpecAnalyser, redirectCheckResponseFactory, NUM_WORKERS, progressMonitor);
         when(redirectCheckResponseFactory.createResponse(any(), any())).thenReturn(Mockito.mock(RedirectCheckResponse.class));
     }
 
@@ -76,7 +77,7 @@ public class ParallelRedirectSpecAnalyserTest {
         sut = new ParallelRedirectSpecAnalyser(s -> {
             awaitForOtherThreads(latch);
             return new RedirectChain();
-        }, redirectCheckResponseFactory, GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS);
+        }, redirectCheckResponseFactory, GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS, progressMonitor);
 
         sut.runParallelAnalysis(createTestSpecWithSize(GREATER_THAN_SYSTEM_DEFAULT_NUM_WORKERS));
 
@@ -96,7 +97,7 @@ public class ParallelRedirectSpecAnalyserTest {
         List<RedirectSpecification> spec = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
-            RedirectSpecification curSpec = new RedirectSpecification(0, "http://www.example.com/" + i, "http://www.example.com/" + i + "/dst", 200);
+            RedirectSpecification curSpec = RedirectSpecification.createValid(0, "http://www.example.com/" + i, "http://www.example.com/" + i + "/dst", 200);
 
             RedirectChain curResponse = new RedirectChain();
             RedirectCheckResponse curChainResponse = Mockito.mock(RedirectCheckResponse.class);

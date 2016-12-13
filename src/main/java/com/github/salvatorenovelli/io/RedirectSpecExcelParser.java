@@ -1,6 +1,5 @@
 package com.github.salvatorenovelli.io;
 
-import com.github.salvatorenovelli.model.InvalidRedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -15,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 public class RedirectSpecExcelParser implements RedirectSpecificationParser {
@@ -22,14 +22,13 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
     public static final int DEFAULT_STATUS_CODE = 200;
     public static final boolean NON_PARALLEL = false;
     private static final Logger logger = LoggerFactory.getLogger(RedirectSpecExcelParser.class);
-    private final ParsedSpecificationHandler handler;
+
     private final Workbook wb;
     private final Sheet sheet;
 
-    public RedirectSpecExcelParser(String filename, ParsedSpecificationHandler handler) throws IOException, InvalidFormatException {
+    public RedirectSpecExcelParser(String filename) throws IOException, InvalidFormatException {
         this.wb = WorkbookFactory.create(new FileInputStream(filename));
         this.sheet = getFirstVisibleSheet();
-        this.handler = handler;
     }
 
     private Sheet getFirstVisibleSheet() {
@@ -40,26 +39,30 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
         return first.orElseThrow(() -> new RuntimeException("The workbook looks empty!"));
     }
 
+
     @Override
     public int getNumSpecs() {
         return sheet.getPhysicalNumberOfRows();
     }
 
 
-    public void parse() throws IOException {
+    @Override
+    public void parse(Consumer<RedirectSpecification> validSpecConsumer) throws IOException {
         StreamSupport.stream(sheet.spliterator(), NON_PARALLEL)
-                .forEach(this::toRedirectSpecification);
+                .map(this::toRedirectSpecification)
+                .forEach(validSpecConsumer);
     }
 
-    private void toRedirectSpecification(Row row) {
+    private RedirectSpecification toRedirectSpecification(Row row) {
+        int lineNumber = row.getRowNum() + 1;
         try {
             String col1 = extractSourceURI(row);
             String col2 = extractExpectedDestination(row);
             int expectedStatusCode = extractExpectedStatusCode(row);
-            handler.handleValidSpec(new RedirectSpecification(row.getRowNum() + 1, col1, col2, expectedStatusCode));
+            return RedirectSpecification.createValid(lineNumber, col1, col2, expectedStatusCode);
         } catch (Exception e) {
-            logger.warn("Unable to parse specification in row {} because:  {}", row.getRowNum(), e.toString());
-            handler.handleInvalidSpec(new InvalidRedirectSpecification(row.getRowNum() + 1, e.getMessage()));
+            logger.warn("Unable to parse specification in row {} because:  {}", lineNumber, e.toString());
+            return RedirectSpecification.createInvalid(lineNumber, e.getMessage());
         }
     }
 

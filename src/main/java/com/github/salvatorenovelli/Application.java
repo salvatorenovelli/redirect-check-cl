@@ -2,11 +2,9 @@ package com.github.salvatorenovelli;
 
 import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
-import com.github.salvatorenovelli.io.ParsedSpecificationHandler;
 import com.github.salvatorenovelli.io.RedirectCheckResponseCsvSerializer;
 import com.github.salvatorenovelli.io.RedirectSpecExcelParser;
 import com.github.salvatorenovelli.io.RedirectSpecificationParser;
-import com.github.salvatorenovelli.model.InvalidRedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
@@ -25,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-public class Application implements ParsedSpecificationHandler {
+public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final int NUM_WORKERS = 50;
@@ -35,8 +33,7 @@ public class Application implements ParsedSpecificationHandler {
 
     private TextProgressBar progressBar;
     private RedirectSpecificationParser parser;
-    private List<RedirectSpecification> validSpec = new ArrayList<>();
-    private List<InvalidRedirectSpecification> invalidSpec = new ArrayList<>();
+    private List<RedirectSpecification> specs = new ArrayList<>();
 
     private Application(String sourceFilename) throws IOException {
 
@@ -49,7 +46,7 @@ public class Application implements ParsedSpecificationHandler {
                 throw new UnsupportedOperationException("CSV files are no longer supported. Please use excel workbook.");
                 //this.parser = new RedirectSpecCSVParser(Paths.get(sourceFilename));
             } else {
-                this.parser = new RedirectSpecExcelParser(sourceFilename, this);
+                this.parser = new RedirectSpecExcelParser(sourceFilename);
             }
 
             this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
@@ -111,10 +108,9 @@ public class Application implements ParsedSpecificationHandler {
     }
 
     private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
-        parser.parse();
 
-        csvWriter.addInvalidSpecs(invalidSpec);
-        List<RedirectCheckResponse> responses = analyseRedirects(validSpec);
+        parser.parse(specs::add);
+        List<RedirectCheckResponse> responses = analyseRedirects(specs);
         csvWriter.addResponses(responses);
         csvWriter.write();
     }
@@ -138,17 +134,6 @@ public class Application implements ParsedSpecificationHandler {
         } finally {
             progressBar.stopPrinting();
         }
-    }
-
-    @Override
-    public void handleValidSpec(RedirectSpecification spec) {
-        validSpec.add(validSpec.size(), spec);
-    }
-
-    @Override
-    public void handleInvalidSpec(InvalidRedirectSpecification spec) {
-        invalidSpec.add(invalidSpec.size(), spec);
-        progressBar.tick();
     }
 
 

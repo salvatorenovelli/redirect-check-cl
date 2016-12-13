@@ -1,6 +1,5 @@
 package com.github.salvatorenovelli.io;
 
-import com.github.salvatorenovelli.model.InvalidRedirectSpecification;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -19,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,21 +32,7 @@ public class RedirectSpecExcelParserTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-
-    private List<RedirectSpecification> validSpec = new ArrayList<>();
-    private List<InvalidRedirectSpecification> invalidSpec = new ArrayList<>();
-
-    private ParsedSpecificationHandler handler = new ParsedSpecificationHandler() {
-        @Override
-        public void handleValidSpec(RedirectSpecification spec) {
-            validSpec.add(validSpec.size(), spec);
-        }
-
-        @Override
-        public void handleInvalidSpec(InvalidRedirectSpecification spec) {
-            invalidSpec.add(invalidSpec.size(), spec);
-        }
-    };
+    private List<RedirectSpecification> specs = new ArrayList<>();
 
     @Test
     public void lineNumberShouldBeSetCorrectly() throws Exception {
@@ -55,13 +41,12 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI2", "ExpectedDestination2")
                 .get();
 
-        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(filename, handler);
-        sut.parse();
+        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(filename);
+        sut.parse(specs::add);
 
-        assertThat(validSpec, hasSize(2));
-        assertThat(validSpec.get(0).getLineNumber(), is(1));
-        assertThat(validSpec.get(1).getLineNumber(), is(2));
-
+        assertThat(specs, hasSize(2));
+        assertThat(specs.get(0).getLineNumber(), is(1));
+        assertThat(specs.get(1).getLineNumber(), is(2));
     }
 
 
@@ -72,12 +57,12 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI1", "ExpectedDestination1", "1234")
                 .get();
 
-        new RedirectSpecExcelParser(filename, handler).parse();
+        new RedirectSpecExcelParser(filename).parse(specs::add);
 
-        assertThat(validSpec, hasSize(1));
-        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
-        assertThat(validSpec.get(0).getExpectedStatusCode(), is(1234));
+        assertThat(specs, hasSize(1));
+        assertThat(specs.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(specs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        assertThat(specs.get(0).getExpectedStatusCode(), is(1234));
 
     }
 
@@ -88,10 +73,10 @@ public class RedirectSpecExcelParserTest {
                 .withRow("sourceURI")
                 .get();
 
-        new RedirectSpecExcelParser(filename, handler).parse();
+        new RedirectSpecExcelParser(filename).parse(specs::add);
 
-        assertThat(validSpec, hasSize(1));
-        assertThat(invalidSpec, hasSize(1));
+        assertThat(valid(specs), hasSize(1));
+        assertThat(invalid(specs), hasSize(1));
     }
 
     @Test
@@ -101,12 +86,12 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI1", "ExpectedDestination1")
                 .get();
 
-        new RedirectSpecExcelParser(filename, handler).parse();
+        new RedirectSpecExcelParser(filename).parse(specs::add);
 
-        assertThat(validSpec, hasSize(1));
-        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
-        assertThat(validSpec.get(0).getExpectedStatusCode(), is(200));
+        assertThat(specs, hasSize(1));
+        assertThat(specs.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(specs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        assertThat(specs.get(0).getExpectedStatusCode(), is(200));
 
     }
 
@@ -119,15 +104,15 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI2", "ExpectedDestination2")
                 .get();
 
-        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(filename, handler);
-        sut.parse();
+        RedirectSpecExcelParser sut = new RedirectSpecExcelParser(filename);
+        sut.parse(specs::add);
 
-        assertThat(validSpec, hasSize(2));
-        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        assertThat(specs, hasSize(2));
+        assertThat(specs.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(specs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
 
-        assertThat(validSpec.get(1).getSourceURI(), is("SourceURI2"));
-        assertThat(validSpec.get(1).getExpectedDestination(), is("ExpectedDestination2"));
+        assertThat(specs.get(1).getSourceURI(), is("SourceURI2"));
+        assertThat(specs.get(1).getExpectedDestination(), is("ExpectedDestination2"));
     }
 
     @Test
@@ -139,14 +124,33 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI2", "ExpectedDestination2")
                 .get();
 
-        new RedirectSpecExcelParser(filename, handler).parse();
+        new RedirectSpecExcelParser(filename).parse(specs::add);
 
-        assertThat(validSpec, hasSize(2));
-        assertThat(validSpec.get(0).getSourceURI(), is("SourceURI1"));
-        assertThat(validSpec.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        assertThat(specs, hasSize(2));
+        assertThat(specs.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(specs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
 
-        assertThat(validSpec.get(1).getSourceURI(), is("SourceURI2"));
-        assertThat(validSpec.get(1).getExpectedDestination(), is("ExpectedDestination2"));
+        assertThat(specs.get(1).getSourceURI(), is("SourceURI2"));
+        assertThat(specs.get(1).getExpectedDestination(), is("ExpectedDestination2"));
+    }
+
+    @Test
+    public void rowNumberShouldBeCountedForValidAndInvalidSpecs() throws Exception {
+
+        String filename = givenAnExcelXFile()
+                .withRow("SourceURI1", "ExpectedDestination1")
+                .withRow("SourceURI3")
+                .withRow("SourceURI4", "ExpectedDestination4")
+                .get();
+
+        new RedirectSpecExcelParser(filename).parse(specs::add);
+
+        assertThat(valid(specs), hasSize(2));
+        assertThat(invalid(specs), hasSize(1));
+
+        assertThat(valid(specs).get(0).getLineNumber(),is(1));
+        assertThat(invalid(specs).get(0).getLineNumber(),is(2));
+        assertThat(valid(specs).get(1).getLineNumber(),is(3));
     }
 
     @Test
@@ -155,10 +159,10 @@ public class RedirectSpecExcelParserTest {
                 .withRow("", "ExpectedDestination1")
                 .get();
 
-        new RedirectSpecExcelParser(filename, handler).parse();
+        new RedirectSpecExcelParser(filename).parse(specs::add);
 
-        assertThat(invalidSpec, hasSize(1));
-        assertThat(invalidSpec.get(0).getErrorMessage(), containsString("'Source URI' parameter is invalid or missing"));
+        assertThat(invalid(specs), hasSize(1));
+        assertThat(specs.get(0).getErrorMessage(), containsString("'Source URI' parameter is invalid or missing"));
 
     }
 
@@ -168,10 +172,10 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceUri")
                 .get();
 
-        new RedirectSpecExcelParser(filename, handler).parse();
+        new RedirectSpecExcelParser(filename).parse(specs::add);
 
-        assertThat(invalidSpec, hasSize(1));
-        assertThat(invalidSpec.get(0).getErrorMessage(), containsString("'Expected Destination' parameter is invalid or missing"));
+        assertThat(invalid(specs), hasSize(1));
+        assertThat(specs.get(0).getErrorMessage(), containsString("'Expected Destination' parameter is invalid or missing"));
     }
 
     @Test
@@ -180,23 +184,18 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceUri", "")
                 .get();
 
-        new RedirectSpecExcelParser(filename, handler).parse();
-
-        assertThat(invalidSpec, hasSize(1));
-        assertThat(invalidSpec.get(0).getErrorMessage(), containsString("'Expected Destination' parameter is invalid or missing"));
+        new RedirectSpecExcelParser(filename).parse(specs::add);
+        assertThat(invalid(specs), hasSize(1));
+        assertThat(specs.get(0).getErrorMessage(), containsString("'Expected Destination' parameter is invalid or missing"));
     }
 
 
     @Test
     public void shouldReturnTheNumberOfRows() throws Exception {
-
         int NUM_ROWS = 10;
-
         String filename = givenAnExcelFileWithRows(NUM_ROWS);
-
-        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename, handler);
+        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename);
         assertThat(parser.getNumSpecs(), is(NUM_ROWS));
-
     }
 
 
@@ -207,7 +206,7 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI1", "ExpectedDestination1")
                 .get();
 
-        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename, handler);
+        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename);
         assertThat(parser.getNumSpecs(), is(1));
     }
 
@@ -218,7 +217,7 @@ public class RedirectSpecExcelParserTest {
                 .withRow("SourceURI1", "ExpectedDestination1")
                 .get();
 
-        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename, handler);
+        RedirectSpecExcelParser parser = new RedirectSpecExcelParser(filename);
         assertThat(parser.getNumSpecs(), is(1));
     }
 
@@ -228,6 +227,15 @@ public class RedirectSpecExcelParserTest {
             excelTestFileBuilder.withRow("SourceURI" + i, "ExpectedDestination" + i);
         }
         return excelTestFileBuilder.get();
+    }
+
+
+    private List<RedirectSpecification> invalid(List<RedirectSpecification> specs) {
+        return specs.stream().filter( it -> !it.isValid()).collect(Collectors.toList());
+    }
+
+    private List<RedirectSpecification> valid(List<RedirectSpecification> specs) {
+        return specs.stream().filter( it -> it.isValid()).collect(Collectors.toList());
     }
 
     private ExcelTestFileBuilder givenAnExcelXFile() {
@@ -258,7 +266,7 @@ public class RedirectSpecExcelParserTest {
             String hiddenSheetName = "HiddenSheet";
             Sheet hiddenSheet = workbook.createSheet(hiddenSheetName);
             workbook.setSheetOrder(hiddenSheetName, 0);
-            workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet),  Workbook.SHEET_STATE_HIDDEN);
+            workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet), Workbook.SHEET_STATE_HIDDEN);
             return this;
         }
 
