@@ -122,7 +122,7 @@ public class Application {
     }
 
     private void initializeProgressBar() {
-        progressBar = new TextProgressBar(parser.getNumSpecs());
+        progressBar = new TextProgressBar(parser.getNumSpecs(), System.out, 50);
         progressBar.startPrinting();
     }
 

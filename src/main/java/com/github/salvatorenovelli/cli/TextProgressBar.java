@@ -2,20 +2,30 @@ package com.github.salvatorenovelli.cli;
 
 import net.jcip.annotations.ThreadSafe;
 
+import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ThreadSafe
 public class TextProgressBar implements Runnable, ProgressMonitor {
 
-    public static final int COMPLETION_BAR_WIDTH = 50;
+    public static final int DEFAULT_BAR_WIDTH = 50;
+    public final int barWith;
 
     private final int totalTicksRequired;
     private final Thread thread = new Thread(this, TextProgressBar.class.getName());
     private final AtomicInteger ticks = new AtomicInteger(0);
+    private final PrintStream printStream;
     private volatile boolean stopPrinting = false;
 
-    public TextProgressBar(int totalTicksRequired) {
+
+    public TextProgressBar(int totalTicksRequired, PrintStream printStream) {
+        this(totalTicksRequired, printStream, DEFAULT_BAR_WIDTH);
+    }
+
+    public TextProgressBar(int totalTicksRequired, PrintStream printStream, int barWith) {
         this.totalTicksRequired = totalTicksRequired;
+        this.printStream = printStream;
+        this.barWith = barWith;
     }
 
     public void startPrinting() {
@@ -27,18 +37,17 @@ public class TextProgressBar implements Runnable, ProgressMonitor {
         ticks.incrementAndGet();
     }
 
-    private synchronized void printCompletionPercentage() {
-        System.out.print("|");
+    synchronized void printCompletionPercentage() {
+        printStream.print("|");
         int i = 0;
-        for (; i < getPercentage() / 100.0 * COMPLETION_BAR_WIDTH; i++) {
-            System.out.print("=");
+        for (; i < getPercentage() / 100.0 * barWith; i++) {
+            printStream.print("=");
         }
-        for (; i < COMPLETION_BAR_WIDTH; i++) {
-            System.out.print("-");
+        for (; i < barWith; i++) {
+            printStream.print("-");
         }
-        System.out.printf("| %d%%\r" + (getPercentage() == 100 ? "\n" : ""), (int) getPercentage());
+        printStream.printf("| %d%%\r" + (getPercentage() == 100 ? "\n" : ""), (int) getPercentage());
     }
-
 
     private double getPercentage() {
         return ticks.get() / (double) totalTicksRequired * 100.0;
