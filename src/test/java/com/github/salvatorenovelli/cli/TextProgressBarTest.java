@@ -17,9 +17,9 @@ public class TextProgressBarTest {
 
     public static final int THREAD_SHOULD_BE_RUNNING_BEFORE_THIS_TIMEOUT = 5000;
     public static final int TOTAL_TICKS_REQUIRED = 10;
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    PrintStream printStream = spy(new PrintStream(baos));
-    TextProgressBar sut = new TextProgressBar(TOTAL_TICKS_REQUIRED, printStream, 10);
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private final PrintStream printStream = new PrintStream(baos);
+    private final TextProgressBar sut = spy(new TextProgressBar(TOTAL_TICKS_REQUIRED, printStream, 10));
 
     @Test
     public void completionPercentage10_test() throws Exception {
@@ -51,9 +51,9 @@ public class TextProgressBarTest {
         CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(invocationOnMock -> {
-            latch.countDown();
-            return null;
-        }).when(printStream).print(anyString());
+             latch.countDown();
+             return null;
+        }).when(sut).startPrinting();
 
         sut.startPrinting();
         latch.await();
