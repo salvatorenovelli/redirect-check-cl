@@ -59,9 +59,7 @@ public class TextProgressBar implements Runnable, ProgressMonitor {
             try {
                 printCompletionPercentage();
                 Thread.sleep(200);
-            } catch (InterruptedException ignore) {
-
-            }
+            } catch (InterruptedException ignore) { }
         }
 
         printCompletionPercentage();
@@ -71,7 +69,6 @@ public class TextProgressBar implements Runnable, ProgressMonitor {
         stopPrinting = true;
         try {
             thread.join();
-        } catch (InterruptedException ignore) {
-        }
+        } catch (InterruptedException ignore) { }
     }
 }
