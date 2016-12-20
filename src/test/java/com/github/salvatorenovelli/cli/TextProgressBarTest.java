@@ -37,7 +37,7 @@ public class TextProgressBarTest {
     }
 
     @Test
-    public void completitionPercentage100_test() throws Exception {
+    public void completionPercentage100_test() throws Exception {
         for (int i = 0; i < 10; i++) {
             sut.tick();
         }
