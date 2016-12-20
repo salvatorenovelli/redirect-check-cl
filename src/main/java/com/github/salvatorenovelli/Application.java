@@ -113,12 +113,18 @@ public class Application {
     private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
         parser.parse(specs::add);
         List<RedirectCheckResponse> responses = analyseRedirects(valid(specs));
+        csvWriter.addInvalidSpecs(invalid(specs));
         csvWriter.addResponses(responses);
+
         csvWriter.write();
     }
 
+    private List<RedirectSpecification> invalid(List<RedirectSpecification> specs) {
+        return specs.stream().filter((specification) -> !specification.isValid()).collect(Collectors.toList());
+    }
+
     private List<RedirectSpecification> valid(List<RedirectSpecification> specs) {
-        return specs.stream().filter((RedirectSpecification::isValid)).collect(Collectors.toList());
+        return specs.stream().filter(RedirectSpecification::isValid).collect(Collectors.toList());
     }
 
     private void initializeProgressBar() {
