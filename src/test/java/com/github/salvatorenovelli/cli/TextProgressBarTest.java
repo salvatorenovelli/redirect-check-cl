@@ -9,7 +9,6 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 
@@ -51,8 +50,8 @@ public class TextProgressBarTest {
         CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(invocationOnMock -> {
-             latch.countDown();
-             return null;
+            latch.countDown();
+            return null;
         }).when(sut).startPrinting();
 
         sut.startPrinting();
