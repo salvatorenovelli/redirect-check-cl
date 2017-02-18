@@ -18,23 +18,24 @@ A command-line utility to verify that a given set of URL correctly redirect to t
 - The input should be formatted with two columns: `sourceURI`,`expectedDestinationURI`. 
 - No titles or headers are necessary.
 
-####Example (CSV): 
-A csv (comma separated value) file having a `sourceURI`,`expectedDestinationURI` for each line. i.e:
-
-    http://example.com, http://www.example.com
-    http://www.example.com/nonexistentpage, http://www.example.com/notfound
-    ...etc...
 
 ####Example (Excel):
-An excel workbook where the *first* sheet has a list of rows where the first two columns contain `sourceURI` and `expectedDestinationURI`). i.e: 
+An excel workbook where the *first* visible sheet has a list of rows where the first two columns contain `sourceURI` and `expectedDestinationURI`). i.e: 
 
       |                     A                   |                B                |
     1 | http://example.com                      | http://www.example.com/         |
     2 | http://www.example.com/nonexistentpage  | http://www.example.com/notfound |
     ...etc...
 
+Optionally you can add a third column with the expected status code (in case you expect something other than 200). Where not specified, we'll expect 200
+
+      |                     A                   |                B                |   C   |
+    1 | http://example.com                      | http://www.example.com/         |       |
+    2 | http://www.example.com/nonexistentpage  | http://www.example.com/notfound |  404  |
+    ...etc...
+
 ###Output
-A csv file with the actual redirect destination, HTTP status code, result (as is SUCCESS or FAILURE) result of every redirect in the input.
+An xlsx file with the actual redirect destination, HTTP status code, result (as is SUCCESS or FAILURE) result of every redirect in the input.
    
 
 
