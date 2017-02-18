@@ -1,7 +1,6 @@
 package com.github.salvatorenovelli.io;
 
 import com.github.salvatorenovelli.model.RedirectSpecification;
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -54,7 +53,7 @@ public class RedirectSpecExcelParserTest {
     public void shouldAcceptOptionalExpectedStatusCode() throws Exception {
 
         String filename = givenAnExcelFile()
-                .withRow("SourceURI1", "ExpectedDestination1", "1234")
+                .withRow("SourceURI1", "ExpectedDestination1", 1234)
                 .get();
 
         new RedirectSpecExcelParser(filename).parse(specs::add);
@@ -63,6 +62,22 @@ public class RedirectSpecExcelParserTest {
         assertThat(specs.get(0).getSourceURI(), is("SourceURI1"));
         assertThat(specs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
         assertThat(specs.get(0).getExpectedStatusCode(), is(1234));
+
+    }
+
+    @Test
+    public void shouldAcceptOptionalExpectedStatusCodesString() throws Exception {
+
+        String filename = givenAnExcelFile()
+                .withRow("SourceURI1", "ExpectedDestination1", "2234")
+                .get();
+
+        new RedirectSpecExcelParser(filename).parse(specs::add);
+
+        assertThat(specs, hasSize(1));
+        assertThat(specs.get(0).getSourceURI(), is("SourceURI1"));
+        assertThat(specs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
+        assertThat(specs.get(0).getExpectedStatusCode(), is(2234));
 
     }
 
@@ -148,9 +163,9 @@ public class RedirectSpecExcelParserTest {
         assertThat(valid(specs), hasSize(2));
         assertThat(invalid(specs), hasSize(1));
 
-        assertThat(valid(specs).get(0).getLineNumber(),is(1));
-        assertThat(invalid(specs).get(0).getLineNumber(),is(2));
-        assertThat(valid(specs).get(1).getLineNumber(),is(3));
+        assertThat(valid(specs).get(0).getLineNumber(), is(1));
+        assertThat(invalid(specs).get(0).getLineNumber(), is(2));
+        assertThat(valid(specs).get(1).getLineNumber(), is(3));
     }
 
     @Test
@@ -231,11 +246,11 @@ public class RedirectSpecExcelParserTest {
 
 
     private List<RedirectSpecification> invalid(List<RedirectSpecification> specs) {
-        return specs.stream().filter( it -> !it.isValid()).collect(Collectors.toList());
+        return specs.stream().filter(it -> !it.isValid()).collect(Collectors.toList());
     }
 
     private List<RedirectSpecification> valid(List<RedirectSpecification> specs) {
-        return specs.stream().filter( it -> it.isValid()).collect(Collectors.toList());
+        return specs.stream().filter(it -> it.isValid()).collect(Collectors.toList());
     }
 
     private ExcelTestFileBuilder givenAnExcelXFile() {
@@ -278,11 +293,16 @@ public class RedirectSpecExcelParserTest {
             return this;
         }
 
-        ExcelTestFileBuilder withRow(String... values) {
+        ExcelTestFileBuilder withRow(Object... values) {
             Row row = sheet.createRow(curRowNumber++);
             int cellNumber = 0;
-            for (String value : values) {
-                row.createCell(cellNumber++).setCellValue(value);
+            for (Object value : values) {
+                if (value instanceof String) {
+                    row.createCell(cellNumber++).setCellValue((String) value);
+                }
+                if (value instanceof Number) {
+                    row.createCell(cellNumber++).setCellValue( ((Number) value).doubleValue());
+                }
             }
             return this;
         }

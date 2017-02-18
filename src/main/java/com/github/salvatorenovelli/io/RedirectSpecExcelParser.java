@@ -1,13 +1,8 @@
 package com.github.salvatorenovelli.io;
 
 import com.github.salvatorenovelli.model.RedirectSpecification;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +11,9 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
+
+import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 public class RedirectSpecExcelParser implements RedirectSpecificationParser {
 
@@ -78,10 +76,18 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
 
     private int extractExpectedStatusCode(Row row) {
         Cell cell = row.getCell(2);
-        if (cell == null || cell.getStringCellValue() == null) {
+        if (cell == null) {
             return DEFAULT_STATUS_CODE;
         }
-        return Integer.parseInt(cell.getStringCellValue());
+
+        CellType cellTypeEnum = cell.getCellTypeEnum();
+        if (cellTypeEnum == STRING) {
+            return Integer.parseInt(cell.getStringCellValue());
+        } else if (cellTypeEnum == NUMERIC) {
+            return (int) cell.getNumericCellValue();
+        }
+
+        throw new IllegalArgumentException("Unable to handle status code with format: " + cellTypeEnum);
     }
 
     private Cell extractCell(Row row, int i, String cellName) {
