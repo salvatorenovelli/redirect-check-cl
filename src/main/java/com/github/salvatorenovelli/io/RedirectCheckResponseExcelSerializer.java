@@ -24,7 +24,7 @@ public class RedirectCheckResponseExcelSerializer {
     private final CellStyle ROW_STYLE;
 
     private SortedSet<ResponseWrapper> responses = new TreeSet<>(Comparator.comparingInt(ResponseWrapper::getLineNumber));
-    private int curIndex = 0;
+    private int curRowIndex = 0;
 
     public RedirectCheckResponseExcelSerializer(String outFileName) throws IOException {
 
@@ -53,21 +53,16 @@ public class RedirectCheckResponseExcelSerializer {
                 sheet.autoSizeColumn(i, true);
             }
         } finally {
-
-
             FileOutputStream out = new FileOutputStream(filename);
             wb.write(out);
             out.close();
-
             wb.close();
         }
     }
 
     private void createHeader() {
-        Row row = sheet.createRow(curIndex++);
+        Row row = sheet.createRow(curRowIndex++);
         int index = 0;
-
-
         for (String curHeader : HEADERS) {
             Cell cell = row.createCell(index++);
             cell.setCellValue(curHeader);
@@ -83,9 +78,11 @@ public class RedirectCheckResponseExcelSerializer {
             fields = Arrays.asList(String.valueOf(cr.lineNumber), cr.sourceURI, cr.result, cr.reason, cr.expectedURI, cr.actualURI, cr.lastHTTPStatus);
         }
 
-        Row row = sheet.createRow(curIndex++);
+        writeRow(fields);
+    }
 
-
+    private void writeRow(List<String> fields) {
+        Row row = sheet.createRow(curRowIndex++);
         int curCellIndex = 0;
         for (String field : fields) {
             Cell cell = row.createCell(curCellIndex++);
