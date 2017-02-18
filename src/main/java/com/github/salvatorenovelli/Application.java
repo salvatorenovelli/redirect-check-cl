@@ -3,6 +3,7 @@ package com.github.salvatorenovelli;
 import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
 import com.github.salvatorenovelli.io.RedirectCheckResponseCsvSerializer;
+import com.github.salvatorenovelli.io.RedirectCheckResponseExcelSerializer;
 import com.github.salvatorenovelli.io.RedirectSpecExcelParser;
 import com.github.salvatorenovelli.io.RedirectSpecificationParser;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
@@ -30,7 +31,7 @@ public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final int NUM_WORKERS = 50;
     private final RedirectChainAnalyser chainAnalyser;
-    private final RedirectCheckResponseCsvSerializer csvWriter;
+    private final RedirectCheckResponseExcelSerializer output;
 
 
     private TextProgressBar progressBar;
@@ -40,18 +41,17 @@ public class Application {
     private Application(String sourceFilename) throws IOException {
 
 
-        String outFileName = sourceFilename + "_out.csv";
+        String outFileName = sourceFilename + "_out.xlsx";
 
         try {
             System.out.println("Opening input file: " + sourceFilename);
             if (sourceFilename.endsWith(".csv")) {
                 throw new UnsupportedOperationException("CSV files are no longer supported. Please use excel workbook.");
-                //this.parser = new RedirectSpecCSVParser(Paths.get(sourceFilename));
             } else {
                 this.parser = new RedirectSpecExcelParser(sourceFilename);
             }
 
-            this.csvWriter = new RedirectCheckResponseCsvSerializer(outFileName);
+            this.output = new RedirectCheckResponseExcelSerializer(outFileName);
             this.chainAnalyser = new DefaultRedirectChainAnalyser(new DefaultHttpConnectorFactory());
             initializeProgressBar();
 
@@ -113,10 +113,10 @@ public class Application {
     private void runAnalysis() throws IOException, ExecutionException, InterruptedException {
         parser.parse(specs::add);
         List<RedirectCheckResponse> responses = analyseRedirects(valid(specs));
-        csvWriter.addInvalidSpecs(invalid(specs));
-        csvWriter.addResponses(responses);
+        output.addInvalidSpecs(invalid(specs));
+        output.addResponses(responses);
 
-        csvWriter.write();
+        output.write();
     }
 
     private List<RedirectSpecification> invalid(List<RedirectSpecification> specs) {
