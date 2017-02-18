@@ -7,11 +7,10 @@ import com.github.salvatorenovelli.model.RedirectSpecification;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RedirectCheckResponseCsvSerializer {
@@ -45,7 +44,13 @@ public class RedirectCheckResponseCsvSerializer {
     }
 
     private void tocsv(ResponseWrapper cr) {
-        List<String> fields = Arrays.asList(String.valueOf(cr.lineNumber), cr.sourceURI, cr.result, cr.reason, cr.expectedURI, cr.actualURI, cr.lastHTTPStatus);
+        List<String> fields = null;
+        try {
+            fields = Arrays.asList(String.valueOf(cr.lineNumber), cr.sourceURI, cr.result, cr.reason, cr.expectedURI, URLDecoder.decode(cr.actualURI, Charset.defaultCharset().name()), cr.lastHTTPStatus);
+        } catch (UnsupportedEncodingException e) {
+            fields = Arrays.asList(String.valueOf(cr.lineNumber), cr.sourceURI, cr.result, cr.reason, cr.expectedURI, cr.actualURI, cr.lastHTTPStatus);
+        }
+        
         fields.forEach(this::appendToCSVOutput);
         appendToCSVFile("\n");
     }
