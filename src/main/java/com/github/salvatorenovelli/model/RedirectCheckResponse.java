@@ -2,20 +2,17 @@ package com.github.salvatorenovelli.model;
 
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChain;
 import com.github.salvatorenovelli.redirectcheck.model.RedirectChainElement;
-
-import org.springframework.http.HttpStatus;
+import lombok.EqualsAndHashCode;
 import org.springframework.util.Assert;
 
 import java.util.List;
-
-import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public class RedirectCheckResponse {
 
 
     public static final String DESTINATION_MISMATCH = "Destination doesn't match";
-    public static final String STATUS_CODE_MISMATCH = "HTTP Status is not 200 (OK)";
+    public static final String STATUS_CODE_MISMATCH = "HTTP Status is not ";
     private final Status status;
     private final String statusMessage;
     private final String sourceURI;
@@ -62,9 +59,9 @@ public class RedirectCheckResponse {
             return;
         }
 
-        if (lastHttpStatus != HttpStatus.OK.value()) {
+        if (lastHttpStatus != request.getExpectedStatusCode()) {
             status = Status.FAILURE;
-            statusMessage = STATUS_CODE_MISMATCH;
+            statusMessage = STATUS_CODE_MISMATCH + request.getExpectedStatusCode();
             return;
         }
 

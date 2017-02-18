@@ -77,7 +77,7 @@ public class RedirectCheckResponseExcelSerializer {
         } catch (UnsupportedEncodingException e) {
             fields = Arrays.asList(String.valueOf(cr.lineNumber), cr.sourceURI, cr.result, cr.reason, cr.expectedURI, cr.actualURI, cr.lastHTTPStatus);
         }
-
+       // fields = Arrays.asList(String.valueOf(cr.lineNumber), cr.sourceURI, cr.result, cr.reason, cr.expectedURI, cr.actualURI, cr.lastHTTPStatus);
         writeRow(fields);
     }
 
