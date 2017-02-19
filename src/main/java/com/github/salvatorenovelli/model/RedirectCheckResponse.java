@@ -53,7 +53,7 @@ public class RedirectCheckResponse {
         this.lastHttpStatus = redirectChain.getLastHttpStatus();
         this.numberOfRedirects = redirectChain.getNumOfRedirect();
 
-        if (!request.getExpectedDestination().equals(actualDestinationURI)) {
+        if (!EscapedUriComparator.compare(request.getExpectedDestination(), actualDestinationURI)) {
             status = Status.FAILURE;
             statusMessage = DESTINATION_MISMATCH;
             return;
