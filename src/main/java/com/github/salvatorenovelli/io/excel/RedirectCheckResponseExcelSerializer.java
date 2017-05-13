@@ -1,4 +1,4 @@
-package com.github.salvatorenovelli.io;
+package com.github.salvatorenovelli.io.excel;
 
 
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -116,46 +115,4 @@ public class RedirectCheckResponseExcelSerializer {
         return style;
     }
 
-    private static class ResponseWrapper {
-
-        private final String result;
-        private final String reason;
-        private final String expectedURI;
-        private final String actualURI;
-        private final String lastHTTPStatus;
-        private final String sourceURI;
-        private final int lineNumber;
-
-        private ResponseWrapper(RedirectCheckResponse cr) {
-            this(cr.getRequestLineNumber(), cr.getSourceURI(),
-                    cr.getStatus().toString(),
-                    cr.getStatusMessage(),
-                    cr.getExpectedDestinationURI(),
-                    cr.getActualDestinationURI() != null ? cr.getActualDestinationURI() : "n/a",
-                    cr.getLastHttpStatus() != -1 ? "" + cr.getLastHttpStatus() : "n/a");
-        }
-
-        public ResponseWrapper(RedirectSpecification specification) {
-            this(specification.getLineNumber(),
-                    specification.getSourceURI(),
-                    RedirectCheckResponse.Status.FAILURE.toString(),
-                    specification.getErrorMessage(),
-                    specification.getExpectedDestination(),
-                    "n/a", "n/a");
-        }
-
-        private ResponseWrapper(int lineNumber, String sourceURI, String result, String reason, String expectedURI, String actualURI, String lastHTTPStatus) {
-            this.lineNumber = lineNumber;
-            this.sourceURI = sourceURI;
-            this.result = result;
-            this.reason = reason;
-            this.expectedURI = expectedURI;
-            this.actualURI = actualURI;
-            this.lastHTTPStatus = lastHTTPStatus;
-        }
-
-        public int getLineNumber() {
-            return lineNumber;
-        }
-    }
 }

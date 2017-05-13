@@ -2,9 +2,9 @@ package com.github.salvatorenovelli;
 
 import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
-import com.github.salvatorenovelli.io.RedirectCheckResponseExcelSerializer;
 import com.github.salvatorenovelli.io.RedirectSpecExcelParser;
 import com.github.salvatorenovelli.io.RedirectSpecificationParser;
+import com.github.salvatorenovelli.io.excel.RedirectCheckResponseExcelSerializer;
 import com.github.salvatorenovelli.model.RedirectCheckResponse;
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import com.github.salvatorenovelli.redirectcheck.RedirectCheckResponseFactory;
