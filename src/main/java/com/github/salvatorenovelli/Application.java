@@ -2,7 +2,6 @@ package com.github.salvatorenovelli;
 
 import com.github.salvatorenovelli.cli.TextProgressBar;
 import com.github.salvatorenovelli.http.DefaultHttpConnectorFactory;
-import com.github.salvatorenovelli.io.RedirectCheckResponseCsvSerializer;
 import com.github.salvatorenovelli.io.RedirectCheckResponseExcelSerializer;
 import com.github.salvatorenovelli.io.RedirectSpecExcelParser;
 import com.github.salvatorenovelli.io.RedirectSpecificationParser;
@@ -13,7 +12,6 @@ import com.github.salvatorenovelli.redirectcheck.domain.DefaultRedirectChainAnal
 import com.github.salvatorenovelli.redirectcheck.domain.RedirectChainAnalyser;
 import com.github.salvatorenovelli.seo.redirect.DefaultRedirectSpecAnalyser;
 import com.github.salvatorenovelli.seo.redirect.ParallelRedirectSpecAnalyser;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
