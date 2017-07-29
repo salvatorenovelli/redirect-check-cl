@@ -2,9 +2,7 @@ package com.github.salvatorenovelli.io;
 
 import com.github.salvatorenovelli.model.RedirectSpecification;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.github.salvatorenovelli.io.RedirectSpecExcelParser.DEFAULT_STATUS_CODE;
+import static org.apache.poi.ss.usermodel.CellType.BLANK;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -79,6 +79,32 @@ public class RedirectSpecExcelParserTest {
         assertThat(specs.get(0).getExpectedDestination(), is("ExpectedDestination1"));
         assertThat(specs.get(0).getExpectedStatusCode(), is(2234));
 
+    }
+
+    @Test
+    public void shouldAcceptEmptyStatusCode() throws Exception {
+
+        String filename = givenAnExcelFile()
+                .withRow("SourceURI1", "ExpectedDestination1", "")
+                .get();
+
+        new RedirectSpecExcelParser(filename).parse(specs::add);
+
+        assertThat(specs, hasSize(1));
+        assertThat(specs.get(0).getExpectedStatusCode(), is(DEFAULT_STATUS_CODE));
+    }
+
+    @Test
+    public void shouldAcceptBlankStatusCode() throws Exception {
+
+        String filename = givenAnExcelFile()
+                .withRow("SourceURI1", "ExpectedDestination1", BLANK)
+                .get();
+
+        new RedirectSpecExcelParser(filename).parse(specs::add);
+
+        assertThat(specs, hasSize(1));
+        assertThat(specs.get(0).getExpectedStatusCode(), is(DEFAULT_STATUS_CODE));
     }
 
     @Test
@@ -302,6 +328,9 @@ public class RedirectSpecExcelParserTest {
                 }
                 if (value instanceof Number) {
                     row.createCell(cellNumber++).setCellValue( ((Number) value).doubleValue());
+                }
+                if(value == BLANK){
+                    row.createCell(cellNumber++).setCellType(BLANK);
                 }
             }
             return this;

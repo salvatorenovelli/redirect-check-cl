@@ -76,13 +76,17 @@ public class RedirectSpecExcelParser implements RedirectSpecificationParser {
 
     private int extractExpectedStatusCode(Row row) {
         Cell cell = row.getCell(2);
-        if (cell == null) {
+        if (cell == null || cell.getCellTypeEnum() == CellType.BLANK) {
             return DEFAULT_STATUS_CODE;
         }
 
         CellType cellTypeEnum = cell.getCellTypeEnum();
         if (cellTypeEnum == STRING) {
-            return Integer.parseInt(cell.getStringCellValue());
+            String trimmedValue = cell.getStringCellValue().trim();
+            if (trimmedValue.length() == 0) {
+                return DEFAULT_STATUS_CODE;
+            }
+            return Integer.parseInt(trimmedValue);
         } else if (cellTypeEnum == NUMERIC) {
             return (int) cell.getNumericCellValue();
         }
