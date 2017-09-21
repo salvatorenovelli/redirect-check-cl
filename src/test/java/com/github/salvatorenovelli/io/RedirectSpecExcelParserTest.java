@@ -1,6 +1,7 @@
 package com.github.salvatorenovelli.io;
 
-import com.github.salvatorenovelli.model.RedirectSpecification;
+import com.github.salvatorenovelli.redirectcheck.io.RedirectSpecExcelParser;
+import com.github.salvatorenovelli.redirectcheck.model.RedirectSpecification;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.github.salvatorenovelli.io.RedirectSpecExcelParser.DEFAULT_STATUS_CODE;
+import static com.github.salvatorenovelli.redirectcheck.io.RedirectSpecExcelParser.DEFAULT_STATUS_CODE;
 import static org.apache.poi.ss.usermodel.CellType.BLANK;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;

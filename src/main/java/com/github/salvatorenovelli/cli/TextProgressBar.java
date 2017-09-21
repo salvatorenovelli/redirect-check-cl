@@ -1,5 +1,6 @@
 package com.github.salvatorenovelli.cli;
 
+import com.github.salvatorenovelli.redirectcheck.cli.ProgressMonitor;
 import net.jcip.annotations.ThreadSafe;
 
 import java.io.PrintStream;

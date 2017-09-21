@@ -1,7 +1,7 @@
 package com.github.salvatorenovelli.io.excel;
 
-import com.github.salvatorenovelli.model.RedirectCheckResponse;
-import com.github.salvatorenovelli.model.RedirectSpecification;
+import com.github.salvatorenovelli.redirectcheck.model.RedirectCheckResponse;
+import com.github.salvatorenovelli.redirectcheck.model.RedirectSpecification;
 
 class ResponseWrapper {
 

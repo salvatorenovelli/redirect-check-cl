@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.github.salvatorenovelli.redirect-check</groupId>
             <artifactId>redirect-check-api</artifactId>
-            <version>0.0.11</version>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
