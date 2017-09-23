@@ -3,7 +3,7 @@
 
 A command-line utility to verify that a given set of URL correctly redirect to the expected location. 
 
-##Usage
+## Usage
 
 - Download the latest redirect-check-cl-<version>.exe release from [GitHub Releases][1]
 - Drag & drop your CSV/XLS/XLSX file on to the downloaded executable
@@ -13,13 +13,13 @@ A command-line utility to verify that a given set of URL correctly redirect to t
 
 
 
-###How to create a valid input file to run the analysis:
+### How to create a valid input file to run the analysis:
 
 - The input should be formatted with two columns: `sourceURI`,`expectedDestinationURI`. 
 - No titles or headers are necessary.
 
 
-####Example (Excel):
+#### Example (Excel):
 An excel workbook where the *first* visible sheet has a list of rows where the first two columns contain `sourceURI` and `expectedDestinationURI`). i.e: 
 
       |                     A                   |                B                |
@@ -34,12 +34,12 @@ Optionally you can add a third column with the expected status code (in case you
     2 | http://www.example.com/nonexistentpage  | http://www.example.com/notfound |  404  |
     ...etc...
 
-###Output
+### Output
 An xlsx file with the actual redirect destination, HTTP status code, result (as is SUCCESS or FAILURE) result of every redirect in the input.
    
 
 
-##Context
+## Context
 In [SEO][2], during a website structure/domain migration is common to have a very long list of URLs that need to be redirected to another location, and this list needs to be checked periodically for completion and regression.
 
 Creating such list is already cumbersome but verifying it (periodically) is repetitive, therefore should (must!) be automated. 
